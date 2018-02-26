@@ -11,4 +11,5 @@
     <dimen name="text_content">14sp</dimen>
 
     <dimen name="button_padding">8dp</dimen>
+    <dimen name="list_item_margin">8dp</dimen>
 </resources>

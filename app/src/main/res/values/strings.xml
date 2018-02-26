@@ -3,4 +3,8 @@
     <string name="search">Search!</string>
     <string name="business_name">Business Name</string>
     <string name="address">Address</string>
+    <string name="empty_search_fields_error">You must fill at least one search field.</string>
+    <string name="name_dummy">Name_Dummy</string>
+    <string name="type_dummy">Type_Dummy</string>
+    <string name="rating_dummy">5</string>
 </resources>
