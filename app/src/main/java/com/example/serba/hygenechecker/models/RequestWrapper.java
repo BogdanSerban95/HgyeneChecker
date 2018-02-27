@@ -51,7 +51,7 @@ public class RequestWrapper {
         return requestQueue;
     }
 
-    public void addJsonObjectRequest(int method, String endpoint, final SearchParams params, Response.Listener<JSONObject> successListener, Response.ErrorListener errorListener) {
+    public Request<JSONObject> addJsonObjectRequest(int method, String endpoint, final SearchParams params, Response.Listener<JSONObject> successListener, Response.ErrorListener errorListener) {
         String requestUrl = this.apiUrl + endpoint;
         if (params != null) {
             requestUrl += params.toQueryString();
@@ -59,11 +59,16 @@ public class RequestWrapper {
         Request<JSONObject> request = new JsonObjectRequest(method, requestUrl, null, successListener, errorListener) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers =  new HashMap<>();
+                Map<String, String> headers = new HashMap<>();
                 headers.put("x-api-version", "2");
                 return headers;
             }
         };
+        this.requestQueue.add(request);
+        return request;
+    }
+
+    public void addRequest(Request<JSONObject> request) {
         this.requestQueue.add(request);
     }
 

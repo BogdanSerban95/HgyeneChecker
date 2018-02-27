@@ -22,7 +22,7 @@ public class SearchParams implements Serializable {
     private Integer pageNumber;
 
     public SearchParams() {
-        this.pageSize = 1;
+        this.pageSize = 8;
         this.pageNumber = 1;
     }
 
@@ -47,10 +47,11 @@ public class SearchParams implements Serializable {
     }
 
     public Map<String, String> toHashMap() {
-        Map<String, String> output = new HashMap<String, String>();
+        HashMap<String, String> output = new HashMap<String, String>();
         Gson gson = new Gson();
         String jsonThis = gson.toJson(this);
-        output = (Map<String, String>) gson.fromJson(jsonThis, output.getClass());
+        output = gson.fromJson(jsonThis, output.getClass());
+        Log.e("hash", output.toString());
         return output;
     }
 
@@ -62,9 +63,24 @@ public class SearchParams implements Serializable {
         else
             result.append("?");
         for (String key : paramsMap.keySet()) {
-            result.append(key).append("=").append(String.valueOf(paramsMap.get(key)).replace(" ", "%20")).append("&");
+            result.append(key)
+                    .append("=")
+                    .append(
+                            String.valueOf(paramsMap.get(key))
+                                    .replace(" ", "%20")
+                                    .replace(".0", "")
+                    )
+                    .append("&");
         }
         result.deleteCharAt(result.length() - 1);
         return result.toString();
+    }
+
+    public int getPageNumber() {
+        return pageNumber;
+    }
+
+    public int getPageSize() {
+        return pageSize;
     }
 }
