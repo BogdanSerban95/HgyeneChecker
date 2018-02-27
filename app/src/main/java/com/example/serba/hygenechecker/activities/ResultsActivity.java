@@ -17,8 +17,8 @@ import com.example.serba.hygenechecker.models.Establishment;
 import com.example.serba.hygenechecker.models.RequestWrapper;
 import com.example.serba.hygenechecker.models.ResultsAdapter;
 import com.example.serba.hygenechecker.models.SearchParams;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,7 +36,7 @@ public class ResultsActivity extends AppCompatActivity {
 
     private View listFooter;
     private ListView resultsListView;
-    private View progressSpinner;
+    private ShimmerFrameLayout loadingView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +50,8 @@ public class ResultsActivity extends AppCompatActivity {
         }
 
         resultsListView = findViewById(R.id.results_list_view);
-        progressSpinner = findViewById(R.id.progress_spinner);
+        loadingView = findViewById(R.id.loading_view);
+        loadingView.startShimmerAnimation();
 
         listFooter = LayoutInflater.from(this).inflate(R.layout.list_footer, resultsListView, false);
         List<Establishment> establishments = new ArrayList<>();
@@ -83,7 +84,6 @@ public class ResultsActivity extends AppCompatActivity {
             }
         });
 
-//        loaded = true;
     }
 
     @Override
@@ -118,7 +118,8 @@ public class ResultsActivity extends AppCompatActivity {
         isLoading = false;
         listFooter.setVisibility(View.GONE);
         if (firstStart) {
-            progressSpinner.setVisibility(View.GONE);
+            loadingView.setVisibility(View.GONE);
+            loadingView.stopShimmerAnimation();
             resultsListView.setVisibility(View.VISIBLE);
             firstStart = false;
         }
