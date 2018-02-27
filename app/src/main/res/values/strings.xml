@@ -7,4 +7,6 @@
     <string name="name_dummy">Name_Dummy</string>
     <string name="type_dummy">Type_Dummy</string>
     <string name="rating_dummy">5</string>
+    <string name="fetching_data">Fetching data...</string>
+    <string name="no_results_found">No results found...</string>
 </resources>

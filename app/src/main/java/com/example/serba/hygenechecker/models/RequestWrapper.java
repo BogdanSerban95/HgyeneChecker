@@ -51,7 +51,7 @@ public class RequestWrapper {
         return requestQueue;
     }
 
-    public Request<JSONObject> addJsonObjectRequest(int method, String endpoint, final SearchParams params, Response.Listener<JSONObject> successListener, Response.ErrorListener errorListener) {
+    public void addJsonObjectRequest(int method, String endpoint, final SearchParams params, Response.Listener<JSONObject> successListener, Response.ErrorListener errorListener) {
         String requestUrl = this.apiUrl + endpoint;
         if (params != null) {
             requestUrl += params.toQueryString();
@@ -65,7 +65,6 @@ public class RequestWrapper {
             }
         };
         this.requestQueue.add(request);
-        return request;
     }
 
     public void addRequest(Request<JSONObject> request) {
