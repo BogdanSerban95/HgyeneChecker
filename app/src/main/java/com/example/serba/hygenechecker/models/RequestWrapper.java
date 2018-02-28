@@ -56,6 +56,7 @@ public class RequestWrapper {
         if (params != null) {
             requestUrl += params.toQueryString();
         }
+        Log.e("Request", requestUrl);
         Request<JSONObject> request = new JsonObjectRequest(method, requestUrl, null, successListener, errorListener) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
@@ -64,6 +65,7 @@ public class RequestWrapper {
                 return headers;
             }
         };
+//        request.setShouldCache(false);
         this.requestQueue.add(request);
     }
 

@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -31,6 +33,7 @@ import java.util.List;
 
 public class ResultsActivity extends AppCompatActivity {
     public static final String ESTABLISHMENT_ID = "establishment_id";
+
     private ResultsAdapter resultsAdapter;
     private SearchParams params;
     private boolean isLoading = false;
@@ -40,30 +43,25 @@ public class ResultsActivity extends AppCompatActivity {
     private View listFooter;
     private ListView resultsListView;
     private ShimmerFrameLayout loadingView;
+    private TextView resultsCountTextView;
+    private Spinner sortingSpinner;
+    private View topBannerGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
 
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-
-        resultsListView = findViewById(R.id.results_list_view);
-        loadingView = findViewById(R.id.loading_view);
-        loadingView.startShimmerAnimation();
-
-        listFooter = LayoutInflater.from(this).inflate(R.layout.list_footer, resultsListView, false);
-        List<Establishment> establishments = new ArrayList<>();
         params = (SearchParams) getIntent().getSerializableExtra(MainActivity.SEARCH_PARAMS);
+
+        setActionBar();
+        setViews();
+
+        List<Establishment> establishments = new ArrayList<>();
 
         resultsAdapter = new ResultsAdapter(getApplicationContext(), R.layout.result_row, establishments);
         resultsListView.setAdapter(resultsAdapter);
         resultsListView.addFooterView(listFooter);
-
 
         requestEstablishments();
 
@@ -80,7 +78,6 @@ public class ResultsActivity extends AppCompatActivity {
                 if (i + i1 >= i2) {
                     if (params != null) {
                         params.nextPage();
-                        Log.e("Infinite scroll", "Page: " + params.getPageNumber());
                         requestEstablishments();
                     }
                 }
@@ -99,6 +96,27 @@ public class ResultsActivity extends AppCompatActivity {
                 }
             }
         });
+
+        sortingSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                params.resetPages();
+                params.setSortOptionKey(i);
+                resultsAdapter.clear();
+                endOfList = false;
+                firstStart = true;
+                resultsListView.setVisibility(View.GONE);
+                loadingView.setVisibility(View.VISIBLE);
+                loadingView.startShimmerAnimation();
+                resultsCountTextView.setText("0");
+                requestEstablishments();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     @Override
@@ -107,13 +125,32 @@ public class ResultsActivity extends AppCompatActivity {
         return true;
     }
 
+    private void setViews() {
+        sortingSpinner = findViewById(R.id.sort_spinner);
+        topBannerGroup = findViewById(R.id.results_top_banner);
+        resultsListView = findViewById(R.id.results_list_view);
+        resultsCountTextView = findViewById(R.id.results_count_tv);
+        loadingView = findViewById(R.id.loading_view);
+
+        loadingView.startShimmerAnimation();
+        listFooter = LayoutInflater.from(this).inflate(R.layout.list_footer, resultsListView, false);
+    }
+
+    private void setActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+    }
+
     public void requestEstablishments() {
         onLoadingStarted();
         RequestWrapper.getInstance(this).addJsonObjectRequest(Request.Method.GET, "Establishments", params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                onLoadingDone();
                 handleResponse(response);
+                onLoadingDone();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -136,7 +173,10 @@ public class ResultsActivity extends AppCompatActivity {
             loadingView.setVisibility(View.GONE);
             loadingView.stopShimmerAnimation();
             resultsListView.setVisibility(View.VISIBLE);
+            resultsListView.smoothScrollToPosition(0);
             firstStart = false;
+            if (!resultsAdapter.isEmpty())
+                topBannerGroup.setVisibility(View.VISIBLE);
         }
     }
 
@@ -160,6 +200,7 @@ public class ResultsActivity extends AppCompatActivity {
                     resultsAdapter.add(establishment);
                 }
             }
+            resultsCountTextView.setText(String.valueOf(resultsAdapter.getCount()));
             resultsAdapter.notifyDataSetChanged();
         } catch (JSONException e) {
             e.printStackTrace();

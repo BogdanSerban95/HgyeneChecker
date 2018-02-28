@@ -1,6 +1,7 @@
 package com.example.serba.hygenechecker.activities;
 
 import android.graphics.drawable.Drawable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,7 +26,6 @@ import org.json.JSONObject;
 
 public class EstablishmentDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
     private Establishment currentItem;
-    private boolean isMapReady;
     private GoogleMap googleMap;
     private boolean locationAdded = false;
 
@@ -33,6 +33,12 @@ public class EstablishmentDetailsActivity extends AppCompatActivity implements O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_establishment_details);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
         RequestWrapper requestWrapper = RequestWrapper.getInstance(getApplicationContext());
 
@@ -98,6 +104,13 @@ public class EstablishmentDetailsActivity extends AppCompatActivity implements O
         }
         return 0;
     }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {

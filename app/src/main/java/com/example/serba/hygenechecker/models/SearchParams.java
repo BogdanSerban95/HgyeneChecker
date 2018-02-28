@@ -14,16 +14,22 @@ import java.util.Map;
  */
 
 public class SearchParams implements Serializable {
-    private static final String KEY_NAME = "name";
-    private static final String KEY_ADDRESS = "address";
+    private static String[] sortingOptions;
+
     private String name;
     private String address;
     private Integer pageSize;
     private Integer pageNumber;
+    private String sortOptionKey = "rating";
 
     public SearchParams() {
-        this.pageSize = 8;
-        this.pageNumber = 1;
+        this.resetPages();
+
+        sortingOptions = new String[4];
+        sortingOptions[0] = "rating";
+        sortingOptions[1] = "desc_rating";
+        sortingOptions[2] = "Relevance";
+        sortingOptions[3] = "Distance";
     }
 
     public String getName() {
@@ -82,5 +88,19 @@ public class SearchParams implements Serializable {
 
     public int getPageSize() {
         return pageSize;
+    }
+
+    public void setSortOptionKey(int pos) {
+        if (pos == -1) {
+            this.sortOptionKey = null;
+            return;
+        }
+
+        sortOptionKey = sortingOptions[pos];
+    }
+
+    public void resetPages() {
+        this.pageNumber = 1;
+        this.pageSize = 8;
     }
 }
