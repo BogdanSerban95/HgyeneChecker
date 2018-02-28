@@ -14,7 +14,7 @@
         app:layout_constraintHorizontal_bias="0.461"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/no_results_1" />
+        app:srcCompat="@drawable/no_results" />
 
     <TextView
         android:id="@+id/textView2"

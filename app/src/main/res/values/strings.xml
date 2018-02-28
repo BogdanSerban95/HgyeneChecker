@@ -9,6 +9,10 @@
     <string name="rating_dummy">5</string>
     <string name="fetching_data">Fetching data…</string>
     <string name="no_results_found">No results found…</string>
+    <string name="authority_load_error">Failed to load authorities</string>
+    <string name="regions_load_error">Failed to load regions</string>
+    <string name="business_types_load_error">Failed to load business types</string>
+    <string name="loading_assets">Loading assets...</string>
     <string-array name="sort_options">
         <item>Rating (highest to lowest)</item>
         <item>Rating (lowest to highest)</item>
