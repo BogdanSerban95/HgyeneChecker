@@ -1,5 +1,6 @@
 package com.example.serba.hygenechecker.activities;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.android.volley.Request;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ResultsActivity extends AppCompatActivity {
+    public static final String ESTABLISHMENT_ID = "establishment_id";
     private ResultsAdapter resultsAdapter;
     private SearchParams params;
     private boolean isLoading = false;
@@ -84,6 +87,18 @@ public class ResultsActivity extends AppCompatActivity {
             }
         });
 
+        resultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Establishment currentItem = resultsAdapter.getItem(i);
+                if (currentItem != null) {
+                    String id = currentItem.getFHRSID();
+                    Intent intent = new Intent(getApplicationContext(), EstablishmentDetailsActivity.class);
+                    intent.putExtra(ESTABLISHMENT_ID, id);
+                    startActivity(intent);
+                }
+            }
+        });
     }
 
     @Override
@@ -129,12 +144,9 @@ public class ResultsActivity extends AppCompatActivity {
         try {
             Gson gson = new Gson();
             JSONArray establishmentsArray = response.getJSONArray("establishments");
-            Log.e("Result", String.valueOf(establishmentsArray.length()));
-            Log.e("Result", String.valueOf(params.getPageSize()));
             if (establishmentsArray.length() < params.getPageSize()) {
                 endOfList = true;
                 resultsListView.removeFooterView(listFooter);
-                Log.e("end of list", String.valueOf(endOfList));
             }
 
             if (establishmentsArray.length() == 0) {
