@@ -13,6 +13,14 @@
     <string name="regions_load_error">Failed to load regions</string>
     <string name="business_types_load_error">Failed to load business types</string>
     <string name="loading_assets">Loading assets...</string>
+    <string name="search_near_me">Search near me</string>
+    <string name="advanced_search">Advanced Search</string>
+    <string name="search_radius_miles">Search Radius (miles)</string>
+    <string name="local_authority">Local Authority</string>
+    <string name="region">Region</string>
+    <string name="rating">Rating</string>
+    <string name="business_type">Business Type</string>
+    <string name="simple_search">Simple Search</string>
     <string-array name="sort_options">
         <item>Rating (highest to lowest)</item>
         <item>Rating (lowest to highest)</item>
