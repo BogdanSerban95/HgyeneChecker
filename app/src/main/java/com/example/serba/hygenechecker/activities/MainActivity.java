@@ -1,23 +1,21 @@
 package com.example.serba.hygenechecker.activities;
 
 import android.content.Intent;
-import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
-import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.transition.TransitionManager;
-import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.serba.hygenechecker.R;
+import com.example.serba.hygenechecker.models.AAdvancedSearchParam;
+import com.example.serba.hygenechecker.models.DataCache;
+import com.example.serba.hygenechecker.models.Region;
 import com.example.serba.hygenechecker.models.SearchParams;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,21 +30,20 @@ public class MainActivity extends AppCompatActivity {
     private Button advancedSearchButton;
     private Button localSearchButton;
     private View advancedSearchGroup;
+    private Spinner typeSpinner;
+    private Spinner regionSpinner;
+    private Spinner authoritySpinner;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final ConstraintSet constraintSet1 = new ConstraintSet();
-        final ConstraintSet constraintSet2 = new ConstraintSet();
 
-        constraintSet2.clone(this, R.layout.activity_mail_adv);
-        constraintSet2.setVisibility(R.id.advanced_search_group, ConstraintSet.VISIBLE);
         setContentView(R.layout.activity_main);
 
-        final ConstraintLayout constraintLayout = findViewById(R.id.main_constraint_layout);
-        constraintSet1.clone(constraintLayout);
-
         initViews();
+
+        loadSpinners();
 
         radiusSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -69,21 +66,33 @@ public class MainActivity extends AppCompatActivity {
         advancedSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TransitionManager.beginDelayedTransition(constraintLayout);
                 if (!isAdvancedSearch) {
                     advancedSearchButton.setText(getResources().getString(R.string.simple_search));
-                    constraintSet1.setVisibility(R.id.advanced_search_group, ConstraintSet.VISIBLE);
-//                    constraintSet2.applyTo(constraintLayout);
-//                    advancedSearchGroup.setVisibility(View.VISIBLE);
-//                    localSearchButton.setVisibility(View.GONE);
+                    advancedSearchGroup.setVisibility(View.VISIBLE);
+                    localSearchButton.setVisibility(View.GONE);
                 } else {
                     advancedSearchButton.setText(getResources().getString(R.string.advanced_search));
-                    constraintSet1.setVisibility(R.id.advanced_search_group, ConstraintSet.GONE);
-//                    constraintSet1.applyTo(constraintLayout);
-//                    advancedSearchGroup.setVisibility(View.GONE);
-//                    localSearchButton.setVisibility(View.VISIBLE);
+                    advancedSearchGroup.setVisibility(View.GONE);
+                    localSearchButton.setVisibility(View.VISIBLE);
                 }
                 isAdvancedSearch = !isAdvancedSearch;
+            }
+        });
+
+        regionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Region selectedItem = (Region) regionSpinner.getSelectedItem();
+                ArrayAdapter adapter = (ArrayAdapter) authoritySpinner.getAdapter();
+                adapter.clear();
+                adapter.addAll(DataCache.getInstance().getAuthoritiesForRegion(selectedItem.getDisplayName()));
+                authoritySpinner.setSelection(0);
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
             }
         });
 
@@ -100,6 +109,21 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private void loadSpinners() {
+        typeSpinner.setAdapter(new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, DataCache.getInstance().getBusinessTypes()));
+        regionSpinner.setAdapter(new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, DataCache.getInstance().getRegions()));
+        authoritySpinner.setAdapter(new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_dropdown_item,
+                DataCache
+                        .getInstance()
+                        .getAuthoritiesForRegion(
+                                ((AAdvancedSearchParam) regionSpinner.getSelectedItem())
+                                        .getDisplayName()
+                        ))
+        );
     }
 
     private SearchParams getParametersFromViews() {
@@ -130,6 +154,9 @@ public class MainActivity extends AppCompatActivity {
         advancedSearchButton = findViewById(R.id.advanced_search_button);
         localSearchButton = findViewById(R.id.local_search_button);
         advancedSearchGroup = findViewById(R.id.advanced_search_group);
+        typeSpinner = findViewById(R.id.business_type_spinner);
+        regionSpinner = findViewById(R.id.region_spinner);
+        authoritySpinner = findViewById(R.id.authority_spinner);
     }
 
 }

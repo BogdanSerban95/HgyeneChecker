@@ -4,15 +4,17 @@ package com.example.serba.hygenechecker.models;
  * Created by serba on 28/02/2018.
  */
 
-public class BusinessType {
+public class BusinessType extends AAdvancedSearchParam {
     private String BusinessTypeId;
     private String BusinessTypeName;
 
-    public String getBusinessTypeId() {
+    @Override
+    public String getId() {
         return BusinessTypeId;
     }
 
-    public String getBusinessTypeName() {
+    @Override
+    public String getDisplayName() {
         return BusinessTypeName;
     }
 }

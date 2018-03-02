@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 public class DataCache {
     private static DataCache instance;
-    private ArrayList<BusinessType> businessTypes;
-    private ArrayList<Region> regions;
-    private ArrayList<LocalAuthority> authorities;
+    private ArrayList<AAdvancedSearchParam> businessTypes;
+    private ArrayList<AAdvancedSearchParam> regions;
+    private ArrayList<AAdvancedSearchParam> authorities;
 
     private DataCache() {
         businessTypes = new ArrayList<>();
@@ -26,15 +26,15 @@ public class DataCache {
     }
 
 
-    public ArrayList<BusinessType> getBusinessTypes() {
+    public ArrayList<AAdvancedSearchParam> getBusinessTypes() {
         return businessTypes;
     }
 
-    public ArrayList<Region> getRegions() {
+    public ArrayList<AAdvancedSearchParam> getRegions() {
         return regions;
     }
 
-    public ArrayList<LocalAuthority> getAuthorities() {
+    public ArrayList<AAdvancedSearchParam> getAuthorities() {
         return authorities;
     }
 
@@ -54,5 +54,15 @@ public class DataCache {
         if (businessType != null) {
             this.businessTypes.add(businessType);
         }
+    }
+
+    public ArrayList<AAdvancedSearchParam> getAuthoritiesForRegion(String regionName) {
+        ArrayList<AAdvancedSearchParam> results = new ArrayList<>();
+        for (AAdvancedSearchParam authority : this.authorities) {
+            if (((LocalAuthority) authority).getRegionName().equals(regionName)) {
+                results.add(authority);
+            }
+        }
+        return results;
     }
 }
