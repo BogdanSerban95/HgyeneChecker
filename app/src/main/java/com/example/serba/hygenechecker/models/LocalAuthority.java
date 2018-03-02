@@ -9,6 +9,11 @@ public class LocalAuthority extends AAdvancedSearchParam {
     private String Name;
     private String RegionName;
 
+    public LocalAuthority(String localAuthorityId, String name) {
+        LocalAuthorityId = localAuthorityId;
+        Name = name;
+    }
+
     public String getRegionName() {
         return RegionName;
     }

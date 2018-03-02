@@ -21,6 +21,8 @@
     <string name="rating">Rating</string>
     <string name="business_type">Business Type</string>
     <string name="simple_search">Simple Search</string>
+    <string name="ok">OK</string>
+    <string name="no_search_filter">At least one search criteria must be given</string>
     <string-array name="sort_options">
         <item>Rating (highest to lowest)</item>
         <item>Rating (lowest to highest)</item>

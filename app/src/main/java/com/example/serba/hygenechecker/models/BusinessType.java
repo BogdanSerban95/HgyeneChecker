@@ -8,6 +8,11 @@ public class BusinessType extends AAdvancedSearchParam {
     private String BusinessTypeId;
     private String BusinessTypeName;
 
+    public BusinessType(String businessTypeId, String businessTypeName) {
+        BusinessTypeId = businessTypeId;
+        BusinessTypeName = businessTypeName;
+    }
+
     @Override
     public String getId() {
         return BusinessTypeId;

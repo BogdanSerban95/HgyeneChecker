@@ -16,6 +16,9 @@ public class DataCache {
         businessTypes = new ArrayList<>();
         regions = new ArrayList<>();
         authorities = new ArrayList<>();
+
+        businessTypes.add(new BusinessType(null, "All"));
+        regions.add(new Region(null, "All"));
     }
 
     public static synchronized DataCache getInstance() {
@@ -51,7 +54,7 @@ public class DataCache {
     }
 
     public void addBusinessType(BusinessType businessType) {
-        if (businessType != null) {
+        if (businessType != null && !businessType.getId().equals("-1")) {
             this.businessTypes.add(businessType);
         }
     }
@@ -59,7 +62,7 @@ public class DataCache {
     public ArrayList<AAdvancedSearchParam> getAuthoritiesForRegion(String regionName) {
         ArrayList<AAdvancedSearchParam> results = new ArrayList<>();
         for (AAdvancedSearchParam authority : this.authorities) {
-            if (((LocalAuthority) authority).getRegionName().equals(regionName)) {
+            if (regionName.equals(((LocalAuthority) authority).getRegionName())) {
                 results.add(authority);
             }
         }

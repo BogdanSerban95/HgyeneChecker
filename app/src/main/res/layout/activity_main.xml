@@ -25,7 +25,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.3">
+        app:layout_constraintVertical_bias="0.19999999">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -62,36 +62,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/business_name_edit_text" />
 
-            <TextView
-                android:id="@+id/textView14"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/business_type"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/business_address_edit_text" />
-
             <Spinner
                 android:id="@+id/business_type_spinner"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView14" />
-
-            <TextView
-                android:id="@+id/textView15"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/rating"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/business_type_spinner" />
+                app:layout_constraintTop_toBottomOf="@+id/business_type_cb" />
 
             <RatingBar
                 android:id="@+id/rating_bar"
@@ -100,21 +79,11 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:numStars="5"
-                android:rating="5"
+                android:rating="0"
                 android:stepSize="1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView15" />
-
-            <TextView
-                android:id="@+id/textView16"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/region"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rating_bar" />
+                app:layout_constraintTop_toBottomOf="@+id/rating_cb" />
 
             <Spinner
                 android:id="@+id/region_spinner"
@@ -122,19 +91,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toStartOf="@+id/authority_spinner"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintEnd_toStartOf="@+id/guideline5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView16" />
+                app:layout_constraintTop_toBottomOf="@+id/region_auth_cb" />
 
             <TextView
-                android:id="@+id/textView17"
+                android:id="@+id/auth_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:text="@string/local_authority"
+                android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@+id/authority_spinner"
                 app:layout_constraintStart_toStartOf="@+id/authority_spinner" />
 
@@ -144,20 +111,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/region_spinner"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/region_spinner"
+                app:layout_constraintStart_toStartOf="@+id/guideline5"
                 app:layout_constraintTop_toTopOf="@+id/region_spinner" />
-
-            <TextView
-                android:id="@+id/textView18"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/search_radius_miles"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/region_spinner" />
 
             <SeekBar
                 android:id="@+id/radius_seek_bar"
@@ -165,11 +123,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
                 android:max="100"
                 app:layout_constraintEnd_toStartOf="@+id/radius_label"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView18" />
+                app:layout_constraintTop_toBottomOf="@+id/search_radius_cb" />
 
             <TextView
                 android:id="@+id/radius_label"
@@ -179,6 +136,63 @@
                 app:layout_constraintBottom_toBottomOf="@+id/radius_seek_bar"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/radius_seek_bar" />
+
+            <CheckBox
+                android:id="@+id/business_type_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:checked="true"
+                android:text="@string/business_type"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/business_address_edit_text" />
+
+            <CheckBox
+                android:id="@+id/rating_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:checked="true"
+                android:text="@string/rating"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/business_type_spinner" />
+
+            <CheckBox
+                android:id="@+id/region_auth_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:checked="true"
+                android:text="@string/region"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rating_bar" />
+
+            <CheckBox
+                android:id="@+id/search_radius_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:checked="true"
+                android:text="@string/search_radius_miles"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/region_spinner" />
+
+            <Button
+                android:id="@+id/local_search_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:drawablePadding="8dp"
+                android:drawableStart="@drawable/ic_my_location_black_24dp"
+                android:drawableTint="@color/white"
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp"
+                android:text="@string/search_near_me"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/advanced_search_button" />
 
             <Button
                 android:id="@+id/advanced_search_button"
@@ -202,24 +216,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
-                app:constraint_referenced_ids="textView18,radius_label,textView16,textView17,radius_seek_bar,region_spinner,rating_bar,textView14,business_type_spinner,authority_spinner,textView15" />
+                app:constraint_referenced_ids="radius_label,radius_seek_bar,region_spinner,rating_bar,business_type_spinner,business_type_cb,region_auth_cb,rating_cb,search_radius_cb" />
 
-            <Button
-                android:id="@+id/local_search_button"
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:drawablePadding="8dp"
-                android:drawableStart="@drawable/ic_my_location_black_24dp"
-                android:drawableTint="@color/white"
-                android:paddingEnd="8dp"
-                android:paddingStart="8dp"
-                android:text="@string/search_near_me"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/advanced_search_button" />
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
 
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
