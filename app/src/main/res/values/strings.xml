@@ -23,10 +23,18 @@
     <string name="simple_search">Simple Search</string>
     <string name="ok">OK</string>
     <string name="no_search_filter">At least one search criteria must be given</string>
+    <string name="location_permission">Access to location is required in order to proceed with the current task</string>
+    <string name="gps_enable_message">GPS is required to perform this task. Do you want to enable it?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="waiting_location">Waiting for location...</string>
+    <string name="search_radius_info">By checking this option the app will require your location</string>
+    <string name="_0">0</string>
+    <string name="miles">miles</string>
     <string-array name="sort_options">
         <item>Rating (highest to lowest)</item>
         <item>Rating (lowest to highest)</item>
         <item>Relevance</item>
-        <!--<item>Distance</item>-->
+        <item>Distance</item>
     </string-array>
 </resources>

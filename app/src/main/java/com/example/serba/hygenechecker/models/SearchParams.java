@@ -19,9 +19,8 @@ public class SearchParams implements Serializable {
     private String name;
     private String address;
 
-    private Double longitude;
-
-    private Double latitude;
+    private String longitude;
+    private String latitude;
     private String maxDistanceLimit;
     private String businessTypeId;
     private String ratingKey;
@@ -38,8 +37,8 @@ public class SearchParams implements Serializable {
         sortingOptions = new String[4];
         sortingOptions[0] = "rating";
         sortingOptions[1] = "desc_rating";
-        sortingOptions[2] = "Relevance";
-        sortingOptions[3] = "Distance";
+        sortingOptions[2] = "relevance";
+        sortingOptions[3] = "distance";
     }
 
     public String getName() {
@@ -58,11 +57,11 @@ public class SearchParams implements Serializable {
         this.address = address;
     }
 
-    public void setLongitude(Double longitude) {
+    public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
 
-    public void setLatitude(Double latitude) {
+    public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
 
@@ -140,6 +139,10 @@ public class SearchParams implements Serializable {
     public void resetPages() {
         this.pageNumber = 1;
         this.pageSize = 8;
+    }
+
+    public boolean wasLocationUsed() {
+        return latitude != null && longitude != null;
     }
 
 }

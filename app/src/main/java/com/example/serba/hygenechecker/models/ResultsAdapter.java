@@ -42,6 +42,7 @@ public class ResultsAdapter extends ArrayAdapter<Establishment> {
             holder.nameTextView = row.findViewById(R.id.row_name_text_view);
             holder.typeTextView = row.findViewById(R.id.row_type_text_view);
             holder.ratingTextView = row.findViewById(R.id.row_rating_text_view);
+            holder.distanceTextView = row.findViewById(R.id.distance_text_view);
             row.setTag(holder);
         } else {
             holder = (EstablishmentHolder) row.getTag();
@@ -51,7 +52,8 @@ public class ResultsAdapter extends ArrayAdapter<Establishment> {
         holder.nameTextView.setText(currentItem.getBusinessName());
         holder.typeTextView.setText(currentItem.getBusinessType());
         holder.ratingTextView.setText(String.valueOf(currentItem.getRatingValue()));
-
+        String distanceString = String.format("%.2f", currentItem.getDistance()) + " " + context.getResources().getString(R.string.miles);
+        holder.distanceTextView.setText(distanceString);
         return row;
     }
 
@@ -59,6 +61,7 @@ public class ResultsAdapter extends ArrayAdapter<Establishment> {
         public TextView nameTextView;
         public TextView typeTextView;
         public TextView ratingTextView;
+        public TextView distanceTextView;
     }
 
 }

@@ -1,10 +1,21 @@
 package com.example.serba.hygenechecker.activities;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -25,9 +36,14 @@ import com.example.serba.hygenechecker.models.SearchParams;
 
 public class MainActivity extends AppCompatActivity {
     public static final String SEARCH_PARAMS = "search_parameters";
+    private static final int FINE_LOCATION_PERMISSION = 5512;
 
     private boolean isAdvancedSearch = false;
+    private SearchParams searchParameters;
+    private LocationListener locationListener;
+    private Location currentLocation;
 
+    private LocationManager locationManager;
     private EditText businessNameEditText;
     private EditText businessAddressEditText;
     private TextView radiusTextView;
@@ -43,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox ratingCheckBox;
     private CheckBox regionCheckBox;
     private CheckBox searchRadiusCheckBox;
-    private SearchParams searchParameters;
+    private ProgressDialog progressDialog;
 
 
     @Override
@@ -63,8 +79,7 @@ public class MainActivity extends AppCompatActivity {
         radiusSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                double progress = i / 10.0;
-                radiusTextView.setText(String.valueOf(progress));
+                radiusTextView.setText(String.valueOf(i));
             }
 
             @Override
@@ -91,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                     findViewById(R.id.auth_label).setVisibility(View.GONE);
                     authoritySpinner.setVisibility(View.GONE);
                     regionSpinner.setSelection(0);
-                    searchParameters.setLocalAuthorityId(null);
+//                    searchParameters.setLocalAuthorityId(null);
                     localSearchButton.setVisibility(View.VISIBLE);
                 }
                 isAdvancedSearch = !isAdvancedSearch;
@@ -127,14 +142,167 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.search_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), ResultsActivity.class);
-                if (!getParametersFromViews())
-                    return;
-
-                intent.putExtra(SEARCH_PARAMS, searchParameters);
-                startActivity(intent);
+                startSearchActivity();
             }
         });
+
+        localSearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                runLocationBasedSearch();
+            }
+        });
+    }
+
+    private void startSearchActivity() {
+        Intent intent = new Intent(getApplicationContext(), ResultsActivity.class);
+        if (!getParametersFromViews())
+            return;
+        intent.putExtra(SEARCH_PARAMS, searchParameters);
+        searchParameters = new SearchParams();
+        startActivity(intent);
+    }
+
+    private void runLocationBasedSearch() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)) {
+            new AlertDialog.Builder(getApplicationContext())
+                    .setMessage(getResources().getString(R.string.location_permission))
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            requestLocationPermissions();
+                        }
+                    })
+                    .create()
+                    .show();
+        } else {
+            retrieveCurrentLocation();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case FINE_LOCATION_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    retrieveCurrentLocation();
+                }
+                return;
+        }
+    }
+
+    private void retrieveCurrentLocation() {
+        if (locationManager == null) {
+            locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        }
+
+        if (!isGpsEnabled()) {
+            openGpsSettings();
+            return;
+        }
+
+        getCurrentLocation();
+    }
+
+    private void getCurrentLocation() {
+        if (
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestLocationPermissions();
+            return;
+        }
+        currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        // If the last known location is not older than 15 minutes
+        if (currentLocation != null && System.currentTimeMillis() - currentLocation.getTime() < 900000) {
+            startLocationBasedSearch();
+            return;
+        }
+        runLocationListener();
+    }
+
+    @SuppressLint("MissingPermission")
+    private void runLocationListener() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage(getResources().getString(R.string.waiting_location));
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        if (locationListener == null) {
+            locationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    progressDialog.dismiss();
+                    progressDialog = null;
+                    currentLocation = location;
+                    locationManager.removeUpdates(locationListener);
+                    startLocationBasedSearch();
+                }
+
+                @Override
+                public void onStatusChanged(String s, int i, Bundle bundle) {
+
+                }
+
+                @Override
+                public void onProviderEnabled(String s) {
+
+                }
+
+                @Override
+                public void onProviderDisabled(String s) {
+
+                }
+            };
+        }
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+    }
+
+    private void startLocationBasedSearch() {
+        if (!isAdvancedSearch) {
+            searchParameters = new SearchParams();
+            searchParameters.setMaxDistanceLimit("2");
+        }
+        searchParameters.setLatitude(String.valueOf(currentLocation.getLatitude()));
+        searchParameters.setLongitude(String.valueOf(currentLocation.getLongitude()));
+        Intent intent = new Intent(getApplicationContext(), ResultsActivity.class);
+        intent.putExtra(SEARCH_PARAMS, searchParameters);
+        searchParameters = new SearchParams();
+        startActivity(intent);
+    }
+
+    private void openGpsSettings() {
+        new AlertDialog.Builder(this)
+                .setMessage(getResources().getString(R.string.gps_enable_message))
+                .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(myIntent);
+                    }
+                })
+                .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                }).show();
+    }
+
+    private boolean isGpsEnabled() {
+        boolean gpsEnabled = false;
+        try {
+            gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch (Exception ex) {
+
+        }
+        return gpsEnabled;
+    }
+
+    public void requestLocationPermissions() {
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]
+                {Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION_PERMISSION);
     }
 
     private void setCheckboxListeners() {
@@ -188,21 +356,27 @@ public class MainActivity extends AppCompatActivity {
     private boolean getParametersFromViews() {
         if (!areViewsValid())
             return false;
-
+        searchParameters = new SearchParams();
         searchParameters.setAddress(businessAddressEditText.getText().toString());
         searchParameters.setName(businessNameEditText.getText().toString());
-        if (businessTypeCheckBox.isChecked()) {
-            searchParameters.setBusinessTypeId(((AAdvancedSearchParam) typeSpinner.getSelectedItem()).getId());
-        }
-        if (ratingCheckBox.isChecked()) {
-            searchParameters.setRatingKey(String.valueOf((int) ratingBar.getRating()));
-        }
-        if (searchRadiusCheckBox.isChecked()) {
-            searchParameters.setMaxDistanceLimit(radiusTextView.getText().toString());
-        }
-        if (regionCheckBox.isChecked()) {
-            if (regionSpinner.getSelectedItemPosition() != 0)
-                searchParameters.setLocalAuthorityId(((AAdvancedSearchParam) authoritySpinner.getSelectedItem()).getId());
+
+        if (isAdvancedSearch) {
+            if (businessTypeCheckBox.isChecked()) {
+                searchParameters.setBusinessTypeId(((AAdvancedSearchParam) typeSpinner.getSelectedItem()).getId());
+            }
+            if (ratingCheckBox.isChecked()) {
+                searchParameters.setRatingKey(String.valueOf((int) ratingBar.getRating()));
+            }
+            if (regionCheckBox.isChecked()) {
+                if (regionSpinner.getSelectedItemPosition() != 0) {
+                    searchParameters.setLocalAuthorityId(((AAdvancedSearchParam) authoritySpinner.getSelectedItem()).getId());
+                }
+            }
+            if (searchRadiusCheckBox.isChecked()) {
+                searchParameters.setMaxDistanceLimit(radiusTextView.getText().toString());
+                runLocationBasedSearch();
+                return false;
+            }
         }
 
         return true;

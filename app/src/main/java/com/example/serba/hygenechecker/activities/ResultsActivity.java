@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ResultsActivity extends AppCompatActivity {
@@ -46,6 +48,7 @@ public class ResultsActivity extends AppCompatActivity {
     private TextView resultsCountTextView;
     private Spinner sortingSpinner;
     private View topBannerGroup;
+    private ArrayList<String> filterOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +61,7 @@ public class ResultsActivity extends AppCompatActivity {
         setViews();
 
         List<Establishment> establishments = new ArrayList<>();
+        filterOptions = new ArrayList<>();
 
         resultsAdapter = new ResultsAdapter(getApplicationContext(), R.layout.result_row, establishments);
         resultsListView.setAdapter(resultsAdapter);
@@ -96,7 +100,13 @@ public class ResultsActivity extends AppCompatActivity {
                 }
             }
         });
+        String[] filters = getResources().getStringArray(R.array.sort_options);
+        filterOptions.addAll(Arrays.asList(filters));
 
+        if (!params.wasLocationUsed()) {
+            filterOptions.remove(filterOptions.size() - 1);
+        }
+        sortingSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, filterOptions));
         sortingSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -177,6 +187,8 @@ public class ResultsActivity extends AppCompatActivity {
             firstStart = false;
             if (!resultsAdapter.isEmpty())
                 topBannerGroup.setVisibility(View.VISIBLE);
+        } else {
+            topBannerGroup.setVisibility(View.VISIBLE);
         }
     }
 
