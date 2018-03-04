@@ -1,15 +1,20 @@
 package com.example.serba.hygenechecker.activities;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -22,7 +27,14 @@ import com.example.serba.hygenechecker.models.Establishment;
 import com.example.serba.hygenechecker.models.RequestWrapper;
 import com.example.serba.hygenechecker.models.ResultsAdapter;
 import com.example.serba.hygenechecker.models.SearchParams;
+import com.example.serba.hygenechecker.models.ShopMapInfoWindowAdapter;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -33,7 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ResultsActivity extends AppCompatActivity {
+public class ResultsActivity extends AppCompatActivity implements OnMapReadyCallback {
     public static final String ESTABLISHMENT_ID = "establishment_id";
 
     private ResultsAdapter resultsAdapter;
@@ -49,10 +61,21 @@ public class ResultsActivity extends AppCompatActivity {
     private Spinner sortingSpinner;
     private View topBannerGroup;
     private ArrayList<String> filterOptions;
+    private BottomNavigationView bottomNav;
+
+    private ConstraintLayout mainLayout;
+    private View mapWrapper;
+    private GoogleMap googleMap;
+    private boolean isMapLoaded;
+    private Button loadMoreButton;
+    private boolean addToMap = false;
+    private View mapProgressBar;
+    private boolean mapMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_results);
 
         params = (SearchParams) getIntent().getSerializableExtra(MainActivity.SEARCH_PARAMS);
@@ -68,6 +91,45 @@ public class ResultsActivity extends AppCompatActivity {
         resultsListView.addFooterView(listFooter);
 
         requestEstablishments();
+
+        loadMoreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (endOfList || isLoading)
+                    return;
+                if (params != null) {
+                    params.nextPage();
+                    addToMap = true;
+                    requestEstablishments();
+                }
+            }
+        });
+
+        bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.menu_list:
+                        TransitionManager.beginDelayedTransition(mainLayout);
+                        mapMode = false;
+                        mapWrapper.setVisibility(View.GONE);
+                        topBannerGroup.setVisibility(View.VISIBLE);
+                        resultsListView.setVisibility(View.VISIBLE);
+                        loadMoreButton.setVisibility(View.GONE);
+                        break;
+                    case R.id.menu_map:
+                        TransitionManager.beginDelayedTransition(mainLayout);
+                        mapMode = true;
+                        mapWrapper.setVisibility(View.VISIBLE);
+                        topBannerGroup.setVisibility(View.GONE);
+                        resultsListView.setVisibility(View.GONE);
+                        loadMoreButton.setVisibility(View.VISIBLE);
+                        pinEstablishmentsOnMap(true);
+                        break;
+                }
+                return true;
+            }
+        });
 
         resultsListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -94,9 +156,7 @@ public class ResultsActivity extends AppCompatActivity {
                 Establishment currentItem = resultsAdapter.getItem(i);
                 if (currentItem != null) {
                     String id = currentItem.getFHRSID();
-                    Intent intent = new Intent(getApplicationContext(), EstablishmentDetailsActivity.class);
-                    intent.putExtra(ESTABLISHMENT_ID, id);
-                    startActivity(intent);
+                    startDetailsActivity(id);
                 }
             }
         });
@@ -129,6 +189,12 @@ public class ResultsActivity extends AppCompatActivity {
         });
     }
 
+    private void startDetailsActivity(String id) {
+        Intent intent = new Intent(getApplicationContext(), EstablishmentDetailsActivity.class);
+        intent.putExtra(ESTABLISHMENT_ID, id);
+        startActivity(intent);
+    }
+
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
@@ -141,6 +207,14 @@ public class ResultsActivity extends AppCompatActivity {
         resultsListView = findViewById(R.id.results_list_view);
         resultsCountTextView = findViewById(R.id.results_count_tv);
         loadingView = findViewById(R.id.loading_view);
+        bottomNav = findViewById(R.id.bottom_navigation);
+        mainLayout = findViewById(R.id.main_layout);
+        mapWrapper = findViewById(R.id.map_wrapper);
+        loadMoreButton = findViewById(R.id.load_more_button);
+        mapProgressBar = findViewById(R.id.map_progress);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.results_map_view);
+        mapFragment.getMapAsync(this);
 
         loadingView.startShimmerAnimation();
         listFooter = LayoutInflater.from(this).inflate(R.layout.list_footer, resultsListView, false);
@@ -154,7 +228,7 @@ public class ResultsActivity extends AppCompatActivity {
         }
     }
 
-    public void requestEstablishments() {
+    private void requestEstablishments() {
         onLoadingStarted();
         RequestWrapper.getInstance(this).addJsonObjectRequest(Request.Method.GET, "Establishments", params, new Response.Listener<JSONObject>() {
             @Override
@@ -171,14 +245,49 @@ public class ResultsActivity extends AppCompatActivity {
         });
     }
 
+    private void pinEstablishmentsOnMap(boolean moveCamera) {
+        if (!isMapLoaded) {
+            return;
+        }
+        boolean cameraMoved = false;
+        for (Establishment est : this.resultsAdapter.getItems()) {
+            if (est.getGeocode() != null) {
+                Marker marker = googleMap.addMarker(
+                        new MarkerOptions()
+                                .position(est.getGeocode().toLatLong())
+                                .title(est.getBusinessName())
+                                .snippet("sadasdasdasds dadasdasd")
+                );
+
+                marker.setTag(est);
+                if (!cameraMoved && moveCamera) {
+                    googleMap.animateCamera(
+                            CameraUpdateFactory.newLatLngZoom(est.getGeocode().toLatLong(), 10)
+                    );
+                    cameraMoved = true;
+                }
+            }
+        }
+
+    }
+
     private void onLoadingStarted() {
         isLoading = true;
         listFooter.setVisibility(View.VISIBLE);
+        bottomNav.setEnabled(false);
+        if (mapMode) {
+            mapProgressBar.setVisibility(View.VISIBLE);
+        }
     }
 
     private void onLoadingDone() {
         isLoading = false;
         listFooter.setVisibility(View.GONE);
+        bottomNav.setEnabled(false);
+        bottomNav.setEnabled(false);
+        if (mapMode) {
+            mapProgressBar.setVisibility(View.GONE);
+        }
         if (firstStart) {
             loadingView.setVisibility(View.GONE);
             loadingView.stopShimmerAnimation();
@@ -214,8 +323,30 @@ public class ResultsActivity extends AppCompatActivity {
             }
             resultsCountTextView.setText(String.valueOf(resultsAdapter.getCount()));
             resultsAdapter.notifyDataSetChanged();
+
+            if (addToMap) {
+                pinEstablishmentsOnMap(false);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
+        googleMap.setInfoWindowAdapter(new ShopMapInfoWindowAdapter(getApplicationContext()));
+
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                Establishment est = (Establishment) marker.getTag();
+                if (est != null) {
+                    startDetailsActivity(est.getFHRSID());
+                }
+            }
+        });
+
+        this.isMapLoaded = true;
     }
 }

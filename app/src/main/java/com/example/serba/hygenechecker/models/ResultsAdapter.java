@@ -29,6 +29,10 @@ public class ResultsAdapter extends ArrayAdapter<Establishment> {
         this.items = objects;
     }
 
+    public List<Establishment> getItems() {
+        return this.items;
+    }
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {

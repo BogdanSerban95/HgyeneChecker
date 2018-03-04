@@ -138,7 +138,7 @@ public class SearchParams implements Serializable {
 
     public void resetPages() {
         this.pageNumber = 1;
-        this.pageSize = 8;
+        this.pageSize = 25;
     }
 
     public boolean wasLocationUsed() {
