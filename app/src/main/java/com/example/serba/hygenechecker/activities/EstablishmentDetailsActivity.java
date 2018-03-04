@@ -51,6 +51,7 @@ public class EstablishmentDetailsActivity extends AppCompatActivity implements O
                         Gson gson = new Gson();
                         currentItem = gson.fromJson(response.toString(), Establishment.class);
                         if (currentItem != null) {
+                            setTitle(currentItem.getBusinessName());
                             fillViews(currentItem);
                         }
                     } catch (Exception ex) {

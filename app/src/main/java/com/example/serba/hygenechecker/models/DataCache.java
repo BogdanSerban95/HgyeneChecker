@@ -1,6 +1,9 @@
 package com.example.serba.hygenechecker.models;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Created by serba on 28/02/2018.
@@ -11,11 +14,13 @@ public class DataCache {
     private ArrayList<AAdvancedSearchParam> businessTypes;
     private ArrayList<AAdvancedSearchParam> regions;
     private ArrayList<AAdvancedSearchParam> authorities;
+    private ArrayList<String> favouritesIds;
 
     private DataCache() {
         businessTypes = new ArrayList<>();
         regions = new ArrayList<>();
         authorities = new ArrayList<>();
+        favouritesIds = new ArrayList<>();
 
         businessTypes.add(new BusinessType(null, "All"));
         regions.add(new Region(null, "All"));
@@ -67,5 +72,21 @@ public class DataCache {
             }
         }
         return results;
+    }
+
+    public ArrayList<String> getFavouritesIds() {
+        return favouritesIds;
+    }
+
+    public void setFavouritesIds(String[] favouritesIds) {
+        this.favouritesIds.addAll(Arrays.asList(favouritesIds));
+    }
+
+    public void addFavouriteId(String fhrsid) {
+        this.favouritesIds.add(fhrsid);
+    }
+
+    public void removeFavouriteId(String fshid) {
+        this.favouritesIds.remove(fshid);
     }
 }

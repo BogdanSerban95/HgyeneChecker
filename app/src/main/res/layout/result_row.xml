@@ -5,17 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/color_accent"
-    android:padding="@dimen/app_padding">
+    android:padding="@dimen/app_content_space">
 
     <TextView
         android:id="@+id/row_name_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:text="@string/name_dummy"
         android:textColor="@color/white"
-        android:textSize="@dimen/text_heading"
+        android:textSize="@dimen/text_subheading"
         android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/imageView7"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,34 +27,103 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:text="@string/type_dummy"
         android:textColor="@color/white"
-        android:textSize="@dimen/text_subheading"
+        android:textSize="@dimen/text_small_subheading"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/row_name_text_view" />
 
     <TextView
+        android:id="@+id/distance_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="2dp"
+        android:gravity="center"
+        android:text="@string/_0_0_miles"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_small_subheading"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView6"
+        app:layout_constraintStart_toEndOf="@+id/imageView6"
+        app:layout_constraintTop_toTopOf="@+id/imageView6" />
+
+    <TextView
         android:id="@+id/row_rating_text_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:text="@string/rating_dummy"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:text="@string/_0"
         android:textColor="@color/white"
-        android:textSize="@dimen/text_title"
-        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView5"
+        app:layout_constraintStart_toEndOf="@+id/imageView5"
+        app:layout_constraintTop_toTopOf="@+id/imageView5" />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="20dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/ic_star_rate_white_18dp"
+        android:scaleType="fitXY"
+        app:layout_constraintDimensionRatio="h,1:1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/row_type_text_view" />
+
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="20dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/distance_white"
+        app:layout_constraintBottom_toBottomOf="@+id/row_date_text_view"
+        app:layout_constraintDimensionRatio="h,1:1"
+        app:layout_constraintStart_toEndOf="@+id/row_date_text_view"
+        app:layout_constraintTop_toTopOf="@+id/row_date_text_view" />
+
+    <ImageView
+        android:id="@+id/row_favourite_star"
+        android:layout_width="48dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/star_off"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="h,1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/imageView7"
+        android:layout_width="20dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/ic_date_range_white_36dp"
+        app:layout_constraintBottom_toBottomOf="@+id/row_rating_text_view"
+        app:layout_constraintDimensionRatio="h,1:1"
+        app:layout_constraintStart_toEndOf="@+id/row_rating_text_view"
+        app:layout_constraintTop_toTopOf="@+id/row_rating_text_view" />
+
     <TextView
-        android:id="@+id/distance_text_view"
+        android:id="@+id/row_date_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="2dp"
+        android:gravity="center"
+        android:text="@string/dummy_date"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_small_subheading"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView7"
+        app:layout_constraintStart_toEndOf="@+id/imageView7"
+        app:layout_constraintTop_toTopOf="@+id/imageView7" />
+
+    <android.support.constraint.Group
+        android:id="@+id/distance_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="0.0 miles"
-        android:textColor="@color/white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/row_type_text_view" />
+        app:constraint_referenced_ids="imageView6,distance_text_view"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp" />
+
 </android.support.constraint.ConstraintLayout>

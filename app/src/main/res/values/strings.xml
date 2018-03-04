@@ -52,4 +52,10 @@
     <string name="_2_3">2.3</string>
     <string name="_0_stars">0 stars</string>
     <string name="loading">Loading...</string>
+    <string name="_0_0_miles">0.0 miles</string>
+    <string name="favourite_add_message">Added to favourites list</string>
+    <string name="favourite_remove_message">Removed from favourites list</string>
+    <string name="favourites">Favourites</string>
+    <string name="search_results">Search Results</string>
+    <string name="dummy_date">12.12.2012</string>
 </resources>

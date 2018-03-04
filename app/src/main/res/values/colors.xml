@@ -4,11 +4,11 @@
     <color name="black">#000000</color>
     <color name="gray">#787878</color>
 
-    <color name="color_primary">#689f38</color>
-    <color name="color_primary_dark">#387002</color>
-    <color name="color_primary_light">#99d066</color>
-    <color name="color_accent">#ff5722</color>
-    <color name="color_accent_light">#ff8a50</color>
-    <color name="color_accent_dark">#c41c00</color>
-    <color name="transparent">#00000000</color>
+    <color name="color_primary">#679436</color>
+    <color name="color_primary_dark">#4c5c68</color>
+    <color name="color_primary_light">#aebf31</color>
+    <color name="color_accent">#f6511d</color>
+    <color name="color_accent_light">#ffb400</color>
+    <color name="color_accent_dark">#b71c1c</color>
+    <color name="transparent">#0046494c</color>
 </resources>

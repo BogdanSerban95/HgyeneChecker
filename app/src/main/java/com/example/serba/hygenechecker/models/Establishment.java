@@ -1,28 +1,52 @@
 package com.example.serba.hygenechecker.models;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
+
 import java.util.Date;
 
 /**
  * Created by serba on 26/02/2018.
  */
-
+@Entity
 public class Establishment {
+    @PrimaryKey
+    @NonNull
     private String FHRSID;
+    @ColumnInfo(name = "business_name")
     private String BusinessName;
+    @ColumnInfo(name = "business_type")
     private String BusinessType;
+    @ColumnInfo(name = "rating_value")
     private String RatingValue;
-    private String AddressLine1;
-    private String AddressLine2;
-    private String AddressLine3;
-    private String AddressLine4;
-    private String PostCode;
+    @ColumnInfo(name = "rating_date")
     private String RatingDate;
+    @Ignore
+    private String AddressLine1;
+    @Ignore
+    private String AddressLine2;
+    @Ignore
+    private String AddressLine3;
+    @Ignore
+    private String AddressLine4;
+    @Ignore
+    private String PostCode;
+    @Ignore
     private String LocalAuthorityCode;
+    @Ignore
     private String LocalAuthorityName;
+    @Ignore
     private String LocalAuthorityWebSite;
+    @Ignore
     private String LocalAuthorityEmailAddress;
+    @Ignore
     private Geocode geocode;
+    @Ignore
     private double Distance;
+    @Ignore
     private Scores scores;
 
     public Establishment() {
@@ -104,5 +128,25 @@ public class Establishment {
 
     public String getAddressSecondLine() {
         return this.getAddressLine3() + ", " + this.getAddressLine4();
+    }
+
+    public void setFHRSID(@NonNull String FHRSID) {
+        this.FHRSID = FHRSID;
+    }
+
+    public void setBusinessName(String businessName) {
+        BusinessName = businessName;
+    }
+
+    public void setBusinessType(String businessType) {
+        BusinessType = businessType;
+    }
+
+    public void setRatingValue(String ratingValue) {
+        RatingValue = ratingValue;
+    }
+
+    public void setRatingDate(String ratingDate) {
+        RatingDate = ratingDate;
     }
 }

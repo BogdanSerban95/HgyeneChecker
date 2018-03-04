@@ -11,6 +11,7 @@ import com.android.volley.VolleyError;
 import com.example.serba.hygenechecker.R;
 import com.example.serba.hygenechecker.models.BusinessType;
 import com.example.serba.hygenechecker.models.DataCache;
+import com.example.serba.hygenechecker.models.DatabaseInstance;
 import com.example.serba.hygenechecker.models.LocalAuthority;
 import com.example.serba.hygenechecker.models.Region;
 import com.example.serba.hygenechecker.models.RequestWrapper;
@@ -26,6 +27,8 @@ public class SplashScreen extends AppCompatActivity {
     private boolean authoritiesLoaded = false;
     private boolean regionsLoaded = false;
     private boolean businessTypesLoaded = false;
+    private boolean favouritesLoaded = false;
+
     private RequestWrapper requestWrapper;
     private DataCache dataCache;
     private Gson gson;
@@ -44,9 +47,17 @@ public class SplashScreen extends AppCompatActivity {
         dataCache = DataCache.getInstance();
         gson = new Gson();
 
+        loadFavourites();
         loadBusinessTypes();
         loadRegions();
         loadAuthorities();
+
+    }
+
+    private void loadFavourites() {
+        dataCache.setFavouritesIds(DatabaseInstance.getInstance().getDb(this).establishmentDao().getFavouriteEstablishmentsIds());
+        this.favouritesLoaded = true;
+        onDataLoaded();
     }
 
     private void loadAuthorities() {

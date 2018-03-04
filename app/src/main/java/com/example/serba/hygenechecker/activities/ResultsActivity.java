@@ -8,7 +8,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
@@ -77,6 +80,7 @@ public class ResultsActivity extends AppCompatActivity implements OnMapReadyCall
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_results);
+        setTitle(getResources().getString(R.string.search_results));
 
         params = (SearchParams) getIntent().getSerializableExtra(MainActivity.SEARCH_PARAMS);
 
@@ -87,6 +91,9 @@ public class ResultsActivity extends AppCompatActivity implements OnMapReadyCall
         filterOptions = new ArrayList<>();
 
         resultsAdapter = new ResultsAdapter(getApplicationContext(), R.layout.result_row, establishments);
+        if (!params.wasLocationUsed()) {
+            resultsAdapter.setShowDistance(false);
+        }
         resultsListView.setAdapter(resultsAdapter);
         resultsListView.addFooterView(listFooter);
 
@@ -198,6 +205,28 @@ public class ResultsActivity extends AppCompatActivity implements OnMapReadyCall
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
+        Log.e("back", "asdaasd");
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.action_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case 16908332:
+                onBackPressed();
+                break;
+            case R.id.action_favorite:
+                Intent intent = new Intent(this, FavouritesActivity.class);
+                startActivity(intent);
+                break;
+        }
         return true;
     }
 
@@ -223,8 +252,9 @@ public class ResultsActivity extends AppCompatActivity implements OnMapReadyCall
     private void setActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
         }
     }
 
@@ -312,6 +342,10 @@ public class ResultsActivity extends AppCompatActivity implements OnMapReadyCall
 
             if (establishmentsArray.length() == 0) {
                 findViewById(R.id.no_results_message).setVisibility(View.VISIBLE);
+            }
+
+            if (this.params.getPageNumber() == 1) {
+                this.resultsAdapter.clear();
             }
 
             for (int i = 0; i < establishmentsArray.length(); i++) {
