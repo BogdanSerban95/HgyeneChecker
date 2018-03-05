@@ -15,10 +15,10 @@ import java.util.Map;
 
 public class SearchParams implements Serializable {
     private static String[] sortingOptions;
+    private static String[] fhisRatingKeys;
 
     private String name;
     private String address;
-
     private String longitude;
     private String latitude;
     private String maxDistanceLimit;
@@ -26,9 +26,9 @@ public class SearchParams implements Serializable {
     private String ratingKey;
     private String localAuthorityId;
     private String countryId;
-
     private Integer pageSize;
     private Integer pageNumber;
+    private String schemeTypeKey;
     private String sortOptionKey = "rating";
 
     public SearchParams() {
@@ -39,6 +39,13 @@ public class SearchParams implements Serializable {
         sortingOptions[1] = "desc_rating";
         sortingOptions[2] = "relevance";
         sortingOptions[3] = "distance";
+
+        fhisRatingKeys = new String[5];
+        fhisRatingKeys[0] = "Pass";
+        fhisRatingKeys[1] = "ImprovementRequired";
+        fhisRatingKeys[2] = "AwaitingPublication";
+        fhisRatingKeys[3] = "AwaitingInspection";
+        fhisRatingKeys[4] = "Exempt";
     }
 
     public String getName() {
@@ -75,6 +82,10 @@ public class SearchParams implements Serializable {
 
     public void setRatingKey(String ratingKey) {
         this.ratingKey = ratingKey;
+    }
+
+    public void setFhisRatingKey(int pos) {
+        this.ratingKey = fhisRatingKeys[pos];
     }
 
     public void setLocalAuthorityId(String localAuthorityId) {
@@ -145,4 +156,11 @@ public class SearchParams implements Serializable {
         return latitude != null && longitude != null;
     }
 
+    public void setSchemeTypeKey(String schemeTypeKey) {
+        this.schemeTypeKey = schemeTypeKey;
+    }
+
+    public boolean isFHIS() {
+        return this.schemeTypeKey != null;
+    }
 }

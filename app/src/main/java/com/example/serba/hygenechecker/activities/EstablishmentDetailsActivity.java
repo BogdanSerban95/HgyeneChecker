@@ -5,6 +5,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +16,8 @@ import com.android.volley.VolleyError;
 import com.example.serba.hygenechecker.R;
 import com.example.serba.hygenechecker.models.Establishment;
 import com.example.serba.hygenechecker.models.RequestWrapper;
+import com.example.serba.hygenechecker.models.Utils;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,6 +31,8 @@ public class EstablishmentDetailsActivity extends AppCompatActivity implements O
     private Establishment currentItem;
     private GoogleMap googleMap;
     private boolean locationAdded = false;
+    private ShimmerFrameLayout loadingView;
+    private View errorView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +45,20 @@ public class EstablishmentDetailsActivity extends AppCompatActivity implements O
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
+        loadingView = findViewById(R.id.loading_view);
+        loadingView.startShimmerAnimation();
+
+        errorView = findViewById(R.id.no_results_message);
+
         RequestWrapper requestWrapper = RequestWrapper.getInstance(getApplicationContext());
 
         String id = getIntent().getStringExtra(ResultsActivity.ESTABLISHMENT_ID);
         requestWrapper.addJsonObjectRequest(Request.Method.GET, "establishments/" + id, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                loadingView.stopShimmerAnimation();
+                loadingView.setVisibility(View.GONE);
+                findViewById(R.id.details_scroll_view).setVisibility(View.VISIBLE);
                 if (response != null) {
                     try {
                         Gson gson = new Gson();
@@ -62,6 +75,9 @@ public class EstablishmentDetailsActivity extends AppCompatActivity implements O
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                loadingView.stopShimmerAnimation();
+                loadingView.setVisibility(View.GONE);
+                errorView.setVisibility(View.VISIBLE);
                 Toast.makeText(EstablishmentDetailsActivity.this, "Error occurred while retrieving data...", Toast.LENGTH_SHORT).show();
             }
         });
@@ -80,12 +96,32 @@ public class EstablishmentDetailsActivity extends AppCompatActivity implements O
         ((TextView) findViewById(R.id.auth_email_tv)).setText(currentItem.getLocalAuthorityEmailAddress());
         ((TextView) findViewById(R.id.auth_website_tv)).setText(currentItem.getLocalAuthorityWebSite());
         try {
-            int score = Integer.parseInt(currentItem.getRatingValue());
-            ((ImageView) findViewById(R.id.rating_image_view)).setImageResource(getRatingImage(score));
-        } catch (NumberFormatException ex) {
 
+            String dateText = Utils.formatDateString(currentItem.getRatingDate(), "yyyy-MM-dd'T'hh:mm:ss", "dd.MM.yyyy");
+            ((TextView) findViewById(R.id.rating_date_text_view)).setText(dateText);
+        } catch (Exception ex) {
+            findViewById(R.id.textView23).setVisibility(View.GONE);
+            findViewById(R.id.rating_date_text_view).setVisibility(View.GONE);
         }
-        addLocationOnMap();
+
+        ((TextView) findViewById(R.id.rating_scheme_label)).setText(currentItem.getSchemeType());
+        if (currentItem.getSchemeType().equals("FHRS")) {
+            try {
+                int score = Integer.parseInt(currentItem.getRatingValue());
+                ((ImageView) findViewById(R.id.rating_image_view)).setImageResource(getRatingImage(score));
+            } catch (NumberFormatException ex) {
+            }
+        } else {
+            findViewById(R.id.rating_image_view).setVisibility(View.GONE);
+            ((TextView) findViewById(R.id.fhis_rating_label)).setText(currentItem.getRatingValue());
+            findViewById(R.id.fhis_rating_label).setVisibility(View.VISIBLE);
+        }
+
+        if (currentItem.getGeocode() != null) {
+            addLocationOnMap();
+        } else {
+            findViewById(R.id.map_card_view).setVisibility(View.GONE);
+        }
     }
 
     private int getRatingImage(int score) {
@@ -126,6 +162,6 @@ public class EstablishmentDetailsActivity extends AppCompatActivity implements O
 
         locationAdded = true;
         googleMap.addMarker(new MarkerOptions().position(currentItem.getGeocode().toLatLong()));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(currentItem.getGeocode().toLatLong()));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentItem.getGeocode().toLatLong(), 10));
     }
 }

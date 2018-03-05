@@ -58,4 +58,34 @@
     <string name="favourites">Favourites</string>
     <string name="search_results">Search Results</string>
     <string name="dummy_date">12.12.2012</string>
+    <string name="dummy_type">Dummy Type</string>
+    <string name="dummy_name">DUMMY NAME</string>
+    <string name="dummy_address_line_one">Dummy Address Line One</string>
+    <string name="dummy_address_line_two">Dummy Address Line Two</string>
+    <string name="b15_2qu">B15 2QU</string>
+    <string name="rating_authority">RATING AUTHORITY</string>
+    <string name="authority_name">Authority Name</string>
+    <string name="authorityemail_email_com">authorityEmail@email.com</string>
+    <string name="www_authority_com">www.authority.com</string>
+    <string name="dummy_fhis_rating">Passed</string>
+    <string name="rating_scheme">Rating Scheme</string>
+    <string name="dummy_rating_scheme">Dummy Rating Scheme</string>
+    <string name="rating_date">Rating Date</string>
+    <string name="fhis">FHIS</string>
+    <string name="fhrs">FHRS</string>
+
+    <string-array name="fhis_ratings">
+        <item>Pass</item>
+        <item>Improvement Required</item>
+        <item>Awaiting Publication</item>
+        <item>Awaiting Inspection</item>
+        <item>Exempt</item>
+    </string-array>
+    <string-array name="fhis_rating_keys">
+        <item>fhis_pass_en-gb</item>
+        <item>fhis_improvement_required_en-gb</item>
+        <item>fhis_awaiting_publication_en-gb</item>
+        <item>fhis_awaiting_inspection_en-gb</item>
+        <item>fhis_exempt_en-gb</item>
+    </string-array>
 </resources>

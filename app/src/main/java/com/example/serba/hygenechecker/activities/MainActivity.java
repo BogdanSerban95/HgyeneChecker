@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -41,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int FINE_LOCATION_PERMISSION = 5512;
 
     private boolean isAdvancedSearch = false;
+    private boolean isFhis = false;
+
     private SearchParams searchParameters;
     private LocationListener locationListener;
     private Location currentLocation;
@@ -62,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox regionCheckBox;
     private CheckBox searchRadiusCheckBox;
     private ProgressDialog progressDialog;
+    private RadioGroup ratingSchemeRadioGroup;
+    private Spinner fhisRatingSpinner;
 
 
     @Override
@@ -101,21 +106,51 @@ public class MainActivity extends AppCompatActivity {
                 if (!isAdvancedSearch) {
                     advancedSearchButton.setText(getResources().getString(R.string.simple_search));
                     advancedSearchGroup.setVisibility(View.VISIBLE);
+
+                    ratingBar.setVisibility(View.VISIBLE);
+
                     localSearchButton.setVisibility(View.GONE);
                 } else {
                     advancedSearchButton.setText(getResources().getString(R.string.advanced_search));
                     advancedSearchGroup.setVisibility(View.GONE);
+
                     findViewById(R.id.auth_label).setVisibility(View.GONE);
-                    authoritySpinner.setVisibility(View.GONE);
                     regionSpinner.setSelection(0);
-//                    searchParameters.setLocalAuthorityId(null);
+                    authoritySpinner.setVisibility(View.GONE);
+
+                    fhisRatingSpinner.setVisibility(View.GONE);
+                    ratingSchemeRadioGroup.check(R.id.fhrs_radio);
+                    ratingBar.setVisibility(View.GONE);
+                    isFhis = false;
+
                     localSearchButton.setVisibility(View.VISIBLE);
                 }
                 isAdvancedSearch = !isAdvancedSearch;
             }
         });
 
-        regionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        ratingSchemeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.fhrs_radio:
+                        searchParameters.setSchemeTypeKey(null);
+                        fhisRatingSpinner.setVisibility(View.GONE);
+                        ratingBar.setVisibility(View.VISIBLE);
+                        isFhis = false;
+                        break;
+                    case R.id.fhis_radio:
+                        searchParameters.setSchemeTypeKey("FHIS");
+                        fhisRatingSpinner.setVisibility(View.VISIBLE);
+                        ratingBar.setVisibility(View.GONE);
+                        isFhis = true;
+                        break;
+                }
+            }
+        });
+        regionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+
+        {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (i == 0) {
@@ -148,7 +183,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        localSearchButton.setOnClickListener(new View.OnClickListener() {
+        localSearchButton.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View view) {
                 runLocationBasedSearch();
@@ -385,7 +422,13 @@ public class MainActivity extends AppCompatActivity {
                 searchParameters.setBusinessTypeId(((AAdvancedSearchParam) typeSpinner.getSelectedItem()).getId());
             }
             if (ratingCheckBox.isChecked()) {
-                searchParameters.setRatingKey(String.valueOf((int) ratingBar.getRating()));
+                if (isFhis) {
+                    searchParameters.setSchemeTypeKey("fhis");
+                    searchParameters.setFhisRatingKey(fhisRatingSpinner.getSelectedItemPosition());
+                } else {
+                    searchParameters.setSchemeTypeKey(null);
+                    searchParameters.setRatingKey(String.valueOf((int) ratingBar.getRating()));
+                }
             }
             if (regionCheckBox.isChecked()) {
                 if (regionSpinner.getSelectedItemPosition() != 0) {
@@ -460,6 +503,8 @@ public class MainActivity extends AppCompatActivity {
         ratingCheckBox = findViewById(R.id.rating_cb);
         regionCheckBox = findViewById(R.id.region_auth_cb);
         searchRadiusCheckBox = findViewById(R.id.search_radius_cb);
+        ratingSchemeRadioGroup = findViewById(R.id.scheme_radios);
+        fhisRatingSpinner = findViewById(R.id.fhis_rating_spinner);
 
     }
 

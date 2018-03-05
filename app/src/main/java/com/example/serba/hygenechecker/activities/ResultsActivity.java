@@ -350,10 +350,8 @@ public class ResultsActivity extends AppCompatActivity implements OnMapReadyCall
 
             for (int i = 0; i < establishmentsArray.length(); i++) {
                 JSONObject establishmentJson = establishmentsArray.getJSONObject(i);
-                if (!establishmentJson.get("RatingValue").equals("Exempt")) {
-                    Establishment establishment = gson.fromJson(establishmentJson.toString(), Establishment.class);
-                    resultsAdapter.add(establishment);
-                }
+                Establishment establishment = gson.fromJson(establishmentJson.toString(), Establishment.class);
+                resultsAdapter.add(establishment);
             }
             resultsCountTextView.setText(String.valueOf(resultsAdapter.getCount()));
             resultsAdapter.notifyDataSetChanged();

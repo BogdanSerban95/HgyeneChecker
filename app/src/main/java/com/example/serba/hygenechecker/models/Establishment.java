@@ -48,6 +48,8 @@ public class Establishment {
     private double Distance;
     @Ignore
     private Scores scores;
+    @Ignore
+    private String SchemeType;
 
     public Establishment() {
 
@@ -148,5 +150,9 @@ public class Establishment {
 
     public void setRatingDate(String ratingDate) {
         RatingDate = ratingDate;
+    }
+
+    public String getSchemeType() {
+        return SchemeType;
     }
 }

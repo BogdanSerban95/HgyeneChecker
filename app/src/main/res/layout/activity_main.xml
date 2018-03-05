@@ -73,6 +73,35 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/business_type_cb" />
 
+            <RadioGroup
+                android:id="@+id/scheme_radios"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="@+id/rating_cb"
+                app:layout_constraintStart_toEndOf="@+id/rating_cb"
+                app:layout_constraintTop_toTopOf="@+id/rating_cb">
+
+                <RadioButton
+                    android:id="@+id/fhrs_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="@string/fhrs"
+                    android:textSize="@dimen/text_subheading" />
+
+                <RadioButton
+                    android:id="@+id/fhis_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/fhis"
+                    android:textSize="@dimen/text_subheading" />
+            </RadioGroup>
+
             <RatingBar
                 android:id="@+id/rating_bar"
                 android:layout_width="wrap_content"
@@ -82,9 +111,23 @@
                 android:numStars="5"
                 android:rating="0"
                 android:stepSize="1"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/rating_cb" />
+
+            <Spinner
+                android:id="@+id/fhis_rating_spinner"
+                android:layout_width="0dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:entries="@array/fhis_ratings"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rating_bar" />
 
             <Spinner
                 android:id="@+id/region_spinner"
@@ -165,10 +208,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:checked="true"
                 android:text="@string/region"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rating_bar" />
+                app:layout_constraintTop_toBottomOf="@+id/fhis_rating_spinner" />
 
             <CheckBox
                 android:id="@+id/search_radius_cb"
@@ -218,7 +262,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
-                app:constraint_referenced_ids="radius_label,radius_seek_bar,region_spinner,rating_bar,business_type_spinner,business_type_cb,region_auth_cb,rating_cb,search_radius_cb,separator_2,separator_1,textView22" />
+                app:constraint_referenced_ids="radius_label,radius_seek_bar,region_spinner,business_type_spinner,business_type_cb,region_auth_cb,rating_cb,search_radius_cb,separator_2,separator_1,textView22,scheme_radios" />
 
             <android.support.constraint.Guideline
                 android:id="@+id/guideline5"
