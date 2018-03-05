@@ -155,4 +155,8 @@ public class Establishment {
     public String getSchemeType() {
         return SchemeType;
     }
+
+    public boolean hasGeocode() {
+        return this.getGeocode().getLatitude() != 0 || this.getGeocode().getLongitude() != 0;
+    }
 }

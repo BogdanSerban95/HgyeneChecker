@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private RadioGroup ratingSchemeRadioGroup;
     private Spinner fhisRatingSpinner;
+    private Spinner ratingOperatorSpinner;
 
 
     @Override
@@ -108,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
                     advancedSearchGroup.setVisibility(View.VISIBLE);
 
                     ratingBar.setVisibility(View.VISIBLE);
+                    ratingOperatorSpinner.setVisibility(View.VISIBLE);
 
                     localSearchButton.setVisibility(View.GONE);
                 } else {
@@ -121,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
                     fhisRatingSpinner.setVisibility(View.GONE);
                     ratingSchemeRadioGroup.check(R.id.fhrs_radio);
                     ratingBar.setVisibility(View.GONE);
+                    ratingOperatorSpinner.setVisibility(View.GONE);
                     isFhis = false;
 
                     localSearchButton.setVisibility(View.VISIBLE);
@@ -137,20 +140,20 @@ public class MainActivity extends AppCompatActivity {
                         searchParameters.setSchemeTypeKey(null);
                         fhisRatingSpinner.setVisibility(View.GONE);
                         ratingBar.setVisibility(View.VISIBLE);
+                        ratingOperatorSpinner.setVisibility(View.VISIBLE);
                         isFhis = false;
                         break;
                     case R.id.fhis_radio:
                         searchParameters.setSchemeTypeKey("FHIS");
                         fhisRatingSpinner.setVisibility(View.VISIBLE);
                         ratingBar.setVisibility(View.GONE);
+                        ratingOperatorSpinner.setVisibility(View.GONE);
                         isFhis = true;
                         break;
                 }
             }
         });
-        regionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-
-        {
+        regionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (i == 0) {
@@ -193,33 +196,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void startSearchActivity() {
-        Intent intent = new Intent(getApplicationContext(), ResultsActivity.class);
-        if (!getParametersFromViews())
-            return;
-        intent.putExtra(SEARCH_PARAMS, searchParameters);
-        searchParameters = new SearchParams();
-        startActivity(intent);
-    }
-
-    private void runLocationBasedSearch() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)) {
-            new AlertDialog.Builder(getApplicationContext())
-                    .setMessage(getResources().getString(R.string.location_permission))
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            requestLocationPermissions();
-                        }
-                    })
-                    .create()
-                    .show();
-        } else {
-            retrieveCurrentLocation();
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -246,6 +222,191 @@ public class MainActivity extends AppCompatActivity {
                     retrieveCurrentLocation();
                 }
                 return;
+        }
+    }
+
+    private void initViews() {
+        businessNameEditText = findViewById(R.id.business_name_edit_text);
+        businessAddressEditText = findViewById(R.id.business_address_edit_text);
+        radiusTextView = findViewById(R.id.radius_label);
+        radiusSeekBar = findViewById(R.id.radius_seek_bar);
+        advancedSearchButton = findViewById(R.id.advanced_search_button);
+        localSearchButton = findViewById(R.id.local_search_button);
+        advancedSearchGroup = findViewById(R.id.advanced_search_group);
+        typeSpinner = findViewById(R.id.business_type_spinner);
+        regionSpinner = findViewById(R.id.region_spinner);
+        authoritySpinner = findViewById(R.id.authority_spinner);
+        ratingBar = findViewById(R.id.rating_bar);
+        businessTypeCheckBox = findViewById(R.id.business_type_cb);
+        ratingCheckBox = findViewById(R.id.rating_cb);
+        regionCheckBox = findViewById(R.id.region_auth_cb);
+        searchRadiusCheckBox = findViewById(R.id.search_radius_cb);
+        ratingSchemeRadioGroup = findViewById(R.id.scheme_radios);
+        fhisRatingSpinner = findViewById(R.id.fhis_rating_spinner);
+        ratingOperatorSpinner = findViewById(R.id.rating_operator_spinner);
+
+    }
+
+    private void loadSpinners() {
+        typeSpinner.setAdapter(new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, DataCache.getInstance().getBusinessTypes()));
+        regionSpinner.setAdapter(new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, DataCache.getInstance().getRegions()));
+        authoritySpinner.setAdapter(new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_dropdown_item,
+                DataCache
+                        .getInstance()
+                        .getAuthoritiesForRegion(
+                                ((AAdvancedSearchParam) regionSpinner.getSelectedItem())
+                                        .getDisplayName()
+                        ))
+        );
+    }
+
+    private void setCheckboxListeners() {
+        businessTypeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                typeSpinner.setEnabled(b);
+                searchParameters.setBusinessTypeId(null);
+            }
+        });
+        ratingCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                ratingBar.setEnabled(b);
+                fhisRatingSpinner.setEnabled(b);
+                ratingOperatorSpinner.setEnabled(b);
+                for (int i = 0; i < ratingSchemeRadioGroup.getChildCount(); i++) {
+                    ratingSchemeRadioGroup.getChildAt(i).setEnabled(b);
+                }
+                searchParameters.setRatingKey(null);
+            }
+        });
+        regionCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                regionSpinner.setEnabled(b);
+                authoritySpinner.setEnabled(b);
+                searchParameters.setCountryId(null);
+                searchParameters.setLocalAuthorityId(null);
+            }
+        });
+        searchRadiusCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                radiusSeekBar.setEnabled(b);
+                searchParameters.setBusinessTypeId(null);
+            }
+        });
+    }
+
+    private void startSearchActivity() {
+        Intent intent = new Intent(getApplicationContext(), ResultsActivity.class);
+        if (!getParametersFromViews())
+            return;
+        intent.putExtra(SEARCH_PARAMS, searchParameters);
+        searchParameters = new SearchParams();
+        startActivity(intent);
+    }
+
+    private boolean getParametersFromViews() {
+        if (!areViewsValid())
+            return false;
+        searchParameters = new SearchParams();
+        searchParameters.setAddress(businessAddressEditText.getText().toString());
+        searchParameters.setName(businessNameEditText.getText().toString());
+
+        if (isAdvancedSearch) {
+            if (businessTypeCheckBox.isChecked()) {
+                searchParameters.setBusinessTypeId(((AAdvancedSearchParam) typeSpinner.getSelectedItem()).getId());
+            }
+            if (ratingCheckBox.isChecked()) {
+                if (isFhis) {
+                    searchParameters.setSchemeTypeKey("fhis");
+                    searchParameters.setFhisRatingKey(fhisRatingSpinner.getSelectedItemPosition());
+                } else {
+                    searchParameters.setRatingOperator(((Spinner) ratingOperatorSpinner).getSelectedItem().toString());
+                    searchParameters.setSchemeTypeKey(null);
+                    searchParameters.setRatingKey(String.valueOf((int) ratingBar.getRating()));
+                }
+            }
+            if (regionCheckBox.isChecked()) {
+                if (regionSpinner.getSelectedItemPosition() != 0) {
+                    searchParameters.setLocalAuthorityId(((AAdvancedSearchParam) authoritySpinner.getSelectedItem()).getId());
+                }
+            }
+            if (searchRadiusCheckBox.isChecked()) {
+                searchParameters.setMaxDistanceLimit(radiusTextView.getText().toString());
+                runLocationBasedSearch();
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean areViewsValid() {
+        boolean valid = true;
+        String message = null;
+
+        if (isAdvancedSearch) {
+            if (
+                    !searchRadiusCheckBox.isChecked() &&
+                            !regionCheckBox.isChecked() &&
+                            !ratingCheckBox.isChecked() &&
+                            !businessTypeCheckBox.isChecked() &&
+                            noString(businessNameEditText.getText().toString()) &&
+                            noString(businessAddressEditText.getText().toString())
+                    ) {
+                valid = false;
+                message = getResources().getString(R.string.no_search_filter);
+            }
+        } else {
+            if (businessAddressEditText.getText().toString().isEmpty() && businessNameEditText.getText().toString().isEmpty()) {
+                valid = false;
+                message = getResources().getString(R.string.empty_search_fields_error);
+            }
+        }
+        if (!valid) {
+            new AlertDialog.Builder(this)
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    })
+                    .setMessage(message)
+                    .show();
+        }
+        return valid;
+    }
+
+    private boolean noString(String s) {
+        if (s.isEmpty() && s.length() == 0)
+            return true;
+        return false;
+    }
+
+    public void requestLocationPermissions() {
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]
+                {Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION_PERMISSION);
+    }
+
+    private void runLocationBasedSearch() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)) {
+            new AlertDialog.Builder(getApplicationContext())
+                    .setMessage(getResources().getString(R.string.location_permission))
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            requestLocationPermissions();
+                        }
+                    })
+                    .create()
+                    .show();
+        } else {
+            retrieveCurrentLocation();
         }
     }
 
@@ -329,6 +490,16 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private boolean isGpsEnabled() {
+        boolean gpsEnabled = false;
+        try {
+            gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch (Exception ex) {
+
+        }
+        return gpsEnabled;
+    }
+
     private void openGpsSettings() {
         new AlertDialog.Builder(this)
                 .setMessage(getResources().getString(R.string.gps_enable_message))
@@ -345,167 +516,6 @@ public class MainActivity extends AppCompatActivity {
                         dialogInterface.dismiss();
                     }
                 }).show();
-    }
-
-    private boolean isGpsEnabled() {
-        boolean gpsEnabled = false;
-        try {
-            gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        } catch (Exception ex) {
-
-        }
-        return gpsEnabled;
-    }
-
-    public void requestLocationPermissions() {
-        ActivityCompat.requestPermissions(MainActivity.this, new String[]
-                {Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION_PERMISSION);
-    }
-
-    private void setCheckboxListeners() {
-        businessTypeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                typeSpinner.setEnabled(b);
-                searchParameters.setBusinessTypeId(null);
-            }
-        });
-        ratingCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                ratingBar.setEnabled(b);
-                searchParameters.setRatingKey(null);
-            }
-        });
-        regionCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                regionSpinner.setEnabled(b);
-                authoritySpinner.setEnabled(b);
-                searchParameters.setCountryId(null);
-                searchParameters.setLocalAuthorityId(null);
-            }
-        });
-        searchRadiusCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                radiusSeekBar.setEnabled(b);
-                searchParameters.setBusinessTypeId(null);
-            }
-        });
-    }
-
-    private void loadSpinners() {
-        typeSpinner.setAdapter(new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, DataCache.getInstance().getBusinessTypes()));
-        regionSpinner.setAdapter(new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, DataCache.getInstance().getRegions()));
-        authoritySpinner.setAdapter(new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_dropdown_item,
-                DataCache
-                        .getInstance()
-                        .getAuthoritiesForRegion(
-                                ((AAdvancedSearchParam) regionSpinner.getSelectedItem())
-                                        .getDisplayName()
-                        ))
-        );
-    }
-
-    private boolean getParametersFromViews() {
-        if (!areViewsValid())
-            return false;
-        searchParameters = new SearchParams();
-        searchParameters.setAddress(businessAddressEditText.getText().toString());
-        searchParameters.setName(businessNameEditText.getText().toString());
-
-        if (isAdvancedSearch) {
-            if (businessTypeCheckBox.isChecked()) {
-                searchParameters.setBusinessTypeId(((AAdvancedSearchParam) typeSpinner.getSelectedItem()).getId());
-            }
-            if (ratingCheckBox.isChecked()) {
-                if (isFhis) {
-                    searchParameters.setSchemeTypeKey("fhis");
-                    searchParameters.setFhisRatingKey(fhisRatingSpinner.getSelectedItemPosition());
-                } else {
-                    searchParameters.setSchemeTypeKey(null);
-                    searchParameters.setRatingKey(String.valueOf((int) ratingBar.getRating()));
-                }
-            }
-            if (regionCheckBox.isChecked()) {
-                if (regionSpinner.getSelectedItemPosition() != 0) {
-                    searchParameters.setLocalAuthorityId(((AAdvancedSearchParam) authoritySpinner.getSelectedItem()).getId());
-                }
-            }
-            if (searchRadiusCheckBox.isChecked()) {
-                searchParameters.setMaxDistanceLimit(radiusTextView.getText().toString());
-                runLocationBasedSearch();
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private boolean areViewsValid() {
-        boolean valid = true;
-        String message = null;
-
-        if (isAdvancedSearch) {
-            if (
-                    !searchRadiusCheckBox.isChecked() &&
-                            !regionCheckBox.isChecked() &&
-                            !ratingCheckBox.isChecked() &&
-                            !businessTypeCheckBox.isChecked() &&
-                            noString(businessNameEditText.getText().toString()) &&
-                            noString(businessAddressEditText.getText().toString())
-                    ) {
-                valid = false;
-                message = getResources().getString(R.string.no_search_filter);
-            }
-        } else {
-            if (businessAddressEditText.getText().toString().isEmpty() && businessNameEditText.getText().toString().isEmpty()) {
-                valid = false;
-                message = getResources().getString(R.string.empty_search_fields_error);
-            }
-        }
-        if (!valid) {
-            new AlertDialog.Builder(this)
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    })
-                    .setMessage(message)
-                    .show();
-        }
-        return valid;
-    }
-
-    private boolean noString(String s) {
-        if (s.isEmpty() && s.length() == 0)
-            return true;
-        return false;
-    }
-
-    private void initViews() {
-        businessNameEditText = findViewById(R.id.business_name_edit_text);
-        businessAddressEditText = findViewById(R.id.business_address_edit_text);
-        radiusTextView = findViewById(R.id.radius_label);
-        radiusSeekBar = findViewById(R.id.radius_seek_bar);
-        advancedSearchButton = findViewById(R.id.advanced_search_button);
-        localSearchButton = findViewById(R.id.local_search_button);
-        advancedSearchGroup = findViewById(R.id.advanced_search_group);
-        typeSpinner = findViewById(R.id.business_type_spinner);
-        regionSpinner = findViewById(R.id.region_spinner);
-        authoritySpinner = findViewById(R.id.authority_spinner);
-        ratingBar = findViewById(R.id.rating_bar);
-        businessTypeCheckBox = findViewById(R.id.business_type_cb);
-        ratingCheckBox = findViewById(R.id.rating_cb);
-        regionCheckBox = findViewById(R.id.region_auth_cb);
-        searchRadiusCheckBox = findViewById(R.id.search_radius_cb);
-        ratingSchemeRadioGroup = findViewById(R.id.scheme_radios);
-        fhisRatingSpinner = findViewById(R.id.fhis_rating_spinner);
-
     }
 
 }

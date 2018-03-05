@@ -117,7 +117,7 @@ public class EstablishmentDetailsActivity extends AppCompatActivity implements O
             findViewById(R.id.fhis_rating_label).setVisibility(View.VISIBLE);
         }
 
-        if (currentItem.getGeocode() != null) {
+        if (currentItem.hasGeocode()) {
             addLocationOnMap();
         } else {
             findViewById(R.id.map_card_view).setVisibility(View.GONE);

@@ -73,6 +73,7 @@
     <string name="rating_date">Rating Date</string>
     <string name="fhis">FHIS</string>
     <string name="fhrs">FHRS</string>
+    <string name="results_error">Error while retrieving data</string>
 
     <string-array name="fhis_ratings">
         <item>Pass</item>
@@ -87,5 +88,10 @@
         <item>fhis_awaiting_publication_en-gb</item>
         <item>fhis_awaiting_inspection_en-gb</item>
         <item>fhis_exempt_en-gb</item>
+    </string-array>
+    <string-array name="rating_operators">
+        <item>Equal</item>
+        <item>Less Than Or Equal</item>
+        <item>Greater Than Or Equal</item>
     </string-array>
 </resources>

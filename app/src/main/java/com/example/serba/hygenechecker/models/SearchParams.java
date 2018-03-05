@@ -30,6 +30,7 @@ public class SearchParams implements Serializable {
     private Integer pageNumber;
     private String schemeTypeKey;
     private String sortOptionKey = "rating";
+    private String ratingOperatorKey;
 
     public SearchParams() {
         this.resetPages();
@@ -37,7 +38,7 @@ public class SearchParams implements Serializable {
         sortingOptions = new String[4];
         sortingOptions[0] = "rating";
         sortingOptions[1] = "desc_rating";
-        sortingOptions[2] = "relevance";
+        sortingOptions[2] = "Relevance";
         sortingOptions[3] = "distance";
 
         fhisRatingKeys = new String[5];
@@ -162,5 +163,9 @@ public class SearchParams implements Serializable {
 
     public boolean isFHIS() {
         return this.schemeTypeKey != null;
+    }
+
+    public void setRatingOperator(String operator) {
+        this.ratingOperatorKey = operator.replace(" ", "");
     }
 }

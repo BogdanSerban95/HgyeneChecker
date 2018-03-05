@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -196,12 +197,6 @@ public class ResultsActivity extends AppCompatActivity implements OnMapReadyCall
         });
     }
 
-    private void startDetailsActivity(String id) {
-        Intent intent = new Intent(getApplicationContext(), EstablishmentDetailsActivity.class);
-        intent.putExtra(ESTABLISHMENT_ID, id);
-        startActivity(intent);
-    }
-
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
@@ -228,6 +223,24 @@ public class ResultsActivity extends AppCompatActivity implements OnMapReadyCall
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
+        googleMap.setInfoWindowAdapter(new ShopMapInfoWindowAdapter(getApplicationContext()));
+
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                Establishment est = (Establishment) marker.getTag();
+                if (est != null) {
+                    startDetailsActivity(est.getFHRSID());
+                }
+            }
+        });
+
+        this.isMapLoaded = true;
     }
 
     private void setViews() {
@@ -270,9 +283,16 @@ public class ResultsActivity extends AppCompatActivity implements OnMapReadyCall
             @Override
             public void onErrorResponse(VolleyError error) {
                 onLoadingDone();
+                Toast.makeText(ResultsActivity.this, getResources().getString(R.string.results_error), Toast.LENGTH_SHORT).show();
                 error.printStackTrace();
             }
         });
+    }
+
+    private void startDetailsActivity(String id) {
+        Intent intent = new Intent(getApplicationContext(), EstablishmentDetailsActivity.class);
+        intent.putExtra(ESTABLISHMENT_ID, id);
+        startActivity(intent);
     }
 
     private void pinEstablishmentsOnMap(boolean moveCamera) {
@@ -362,23 +382,5 @@ public class ResultsActivity extends AppCompatActivity implements OnMapReadyCall
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        this.googleMap = googleMap;
-        googleMap.setInfoWindowAdapter(new ShopMapInfoWindowAdapter(getApplicationContext()));
-
-        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-                Establishment est = (Establishment) marker.getTag();
-                if (est != null) {
-                    startDetailsActivity(est.getFHRSID());
-                }
-            }
-        });
-
-        this.isMapLoaded = true;
     }
 }
