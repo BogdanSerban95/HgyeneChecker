@@ -101,4 +101,16 @@
         app:constraint_referenced_ids="imageView3,info_shop_distance,textView20"
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="8dp" />
+
+    <TextView
+        android:id="@+id/fhis_rating_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_small_subheading"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/info_shop_rating" />
 </android.support.constraint.ConstraintLayout>

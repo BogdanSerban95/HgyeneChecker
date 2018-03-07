@@ -29,6 +29,7 @@ public class ShopMapInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         TextView shopTypeTextView = view.findViewById(R.id.info_shop_category);
         TextView shopDistanceTextView = view.findViewById(R.id.info_shop_distance);
         View shopDistanceGroup = view.findViewById(R.id.info_distance_group);
+        TextView fhisRating = view.findViewById(R.id.fhis_rating_label);
         RatingBar shopRatingBar = view.findViewById(R.id.info_shop_rating);
 
         Establishment currentItem = (Establishment) marker.getTag();
@@ -44,6 +45,8 @@ public class ShopMapInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
                 }
             } catch (Exception ex) {
                 shopRatingBar.setVisibility(View.GONE);
+                fhisRating.setVisibility(View.VISIBLE);
+                fhisRating.setText(currentItem.getRatingValue());
             }
             if (currentItem.getDistance() != 0) {
                 shopDistanceGroup.setVisibility(View.VISIBLE);
