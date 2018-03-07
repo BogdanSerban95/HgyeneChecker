@@ -65,27 +65,6 @@ public class RequestWrapper {
                 return headers;
             }
         };
-//        request.setShouldCache(false);
-        this.requestQueue.add(request);
-    }
-
-    public void addRequest(Request<JSONObject> request) {
-        this.requestQueue.add(request);
-    }
-
-    public void addJsonArrayRequest(int method, String endpoint, final SearchParams params, Response.Listener<JSONArray> successListener, Response.ErrorListener errorListener) {
-        String requestUrl = this.apiUrl + endpoint;
-        if (params != null) {
-            requestUrl += params.toQueryString();
-        }
-        final Request<JSONArray> request = new JsonArrayRequest(method, requestUrl, null, successListener, errorListener) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("x-api-version", "2");
-                return headers;
-            }
-        };
         this.requestQueue.add(request);
     }
 }

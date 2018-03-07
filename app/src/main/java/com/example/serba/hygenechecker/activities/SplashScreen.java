@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.android.volley.NetworkError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -65,11 +66,15 @@ public class SplashScreen extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 parseAuthorityResponse(response);
+                authoritiesLoaded = true;
+                onDataLoaded();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.authority_load_error), Toast.LENGTH_SHORT).show();
+                authoritiesLoaded = true;
+                onDataLoaded();
             }
         });
     }
@@ -82,10 +87,8 @@ public class SplashScreen extends AppCompatActivity {
                 dataCache.addAuthority(authority);
             }
         } catch (Exception ex) {
-            Toast.makeText(this, getResources().getString(R.string.authority_load_error), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.authorities_parse_fail), Toast.LENGTH_SHORT).show();
         }
-        authoritiesLoaded = true;
-        onDataLoaded();
     }
 
 
@@ -94,11 +97,15 @@ public class SplashScreen extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 parseRegionsResponse(response);
+                regionsLoaded = true;
+                onDataLoaded();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.regions_load_error), Toast.LENGTH_SHORT).show();
+                regionsLoaded = true;
+                onDataLoaded();
             }
         });
     }
@@ -111,10 +118,9 @@ public class SplashScreen extends AppCompatActivity {
                 dataCache.addRegion(region);
             }
         } catch (Exception ex) {
-            Toast.makeText(this, getResources().getString(R.string.regions_load_error), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.regions_parse_fail), Toast.LENGTH_SHORT).show();
         }
-        regionsLoaded = true;
-        onDataLoaded();
+
     }
 
     private void loadBusinessTypes() {
@@ -122,11 +128,15 @@ public class SplashScreen extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 parseBusinessType(response);
+                businessTypesLoaded = true;
+                onDataLoaded();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.business_types_load_error), Toast.LENGTH_SHORT).show();
+                businessTypesLoaded = true;
+                onDataLoaded();
             }
         });
     }
@@ -139,10 +149,9 @@ public class SplashScreen extends AppCompatActivity {
                 dataCache.addBusinessType(businessType);
             }
         } catch (Exception ex) {
-            Toast.makeText(this, getResources().getString(R.string.business_types_load_error), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.business_type_parse_fail), Toast.LENGTH_SHORT).show();
         }
-        businessTypesLoaded = true;
-        onDataLoaded();
+
     }
 
     private void onDataLoaded() {

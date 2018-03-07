@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         radiusSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                radiusTextView.setText(String.valueOf(i));
+                radiusTextView.setText(String.valueOf(i + 1));
             }
 
             @Override

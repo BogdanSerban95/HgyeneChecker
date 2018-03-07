@@ -12,8 +12,8 @@
     <string name="authority_load_error">Failed to load authorities</string>
     <string name="regions_load_error">Failed to load regions</string>
     <string name="business_types_load_error">Failed to load business types</string>
-    <string name="loading_assets">Loading assets...</string>
-    <string name="search_near_me">Search near me</string>
+    <string name="loading_assets">Loading assets…</string>
+    <string name="search_near_me">Near me</string>
     <string name="advanced_search">Advanced Search</string>
     <string name="search_radius_miles">Search Radius (miles)</string>
     <string name="local_authority">Local Authority</string>
@@ -27,20 +27,14 @@
     <string name="gps_enable_message">GPS is required to perform this task. Do you want to enable it?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="waiting_location">Waiting for location...</string>
-    <string name="search_radius_info">By checking this option the app will require your location</string>
+    <string name="waiting_location">Waiting for location…</string>
+    <string name="search_radius_info">Requires location</string>
     <string name="_0">0</string>
     <string name="miles">miles</string>
     <string name="sort_by">Sort by:</string>
     <string name="results">results</string>
     <string name="_23">23</string>
     <string name="showing">Showing:</string>
-    <string-array name="sort_options">
-        <item>Rating (highest to lowest)</item>
-        <item>Rating (lowest to highest)</item>
-        <item>Relevance</item>
-        <item>Distance</item>
-    </string-array>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
@@ -51,7 +45,7 @@
     <string name="map">Map</string>
     <string name="_2_3">2.3</string>
     <string name="_0_stars">0 stars</string>
-    <string name="loading">Loading...</string>
+    <string name="loading">Loading…</string>
     <string name="_0_0_miles">0.0 miles</string>
     <string name="favourite_add_message">Added to favourites list</string>
     <string name="favourite_remove_message">Removed from favourites list</string>
@@ -79,7 +73,23 @@
     <string name="structural">Structural</string>
     <string name="confidence_in_management">Confidence In Management</string>
     <string name="gps_error">Error while checking GPS connection</string>
+    <string name="details_load_error">"Error occurred while retrieving data…"</string>
+    <string name="asset_load_error">An error was encountered while loading assets…</string>
+    <string name="no_connection_error">No internet connection detected…</string>
+    <string name="load_error">Error encountered…</string>
+    <string name="business_type_parse_fail">Failed to parse business types...</string>
+    <string name="regions_parse_fail">Failed to parse regions</string>
+    <string name="authorities_parse_fail">Failed to parse authorities...</string>
+    <string name="_1">1</string>
+    <string name="miles_br">mile(s)</string>
+    <string name="advanced_options">Advanced Options</string>
 
+    <string-array name="sort_options">
+        <item>Rating (highest to lowest)</item>
+        <item>Rating (lowest to highest)</item>
+        <item>Relevance</item>
+        <item>Distance</item>
+    </string-array>
     <string-array name="fhis_ratings">
         <item>Pass</item>
         <item>Improvement Required</item>

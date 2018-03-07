@@ -1,9 +1,11 @@
 package com.example.serba.hygenechecker.activities;
 
 import android.graphics.drawable.Drawable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -60,9 +62,6 @@ public class EstablishmentDetailsActivity extends AppCompatActivity implements O
         requestWrapper.addJsonObjectRequest(Request.Method.GET, "establishments/" + id, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                loadingView.stopShimmerAnimation();
-                loadingView.setVisibility(View.GONE);
-                findViewById(R.id.details_scroll_view).setVisibility(View.VISIBLE);
                 if (response != null) {
                     try {
                         Gson gson = new Gson();
@@ -75,14 +74,20 @@ public class EstablishmentDetailsActivity extends AppCompatActivity implements O
                         ex.printStackTrace();
                     }
                 }
+                loadingView.stopShimmerAnimation();
+                TransitionManager.beginDelayedTransition((ConstraintLayout) findViewById(R.id.main_details_layout));
+                findViewById(R.id.details_scroll_view).setVisibility(View.VISIBLE);
+                loadingView.setVisibility(View.GONE);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
                 loadingView.stopShimmerAnimation();
+                TransitionManager.beginDelayedTransition((ConstraintLayout) findViewById(R.id.main_details_layout));
                 loadingView.setVisibility(View.GONE);
                 errorView.setVisibility(View.VISIBLE);
-                Toast.makeText(EstablishmentDetailsActivity.this, "Error occurred while retrieving data...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EstablishmentDetailsActivity.this, getResources().getString(R.string.details_load_error), Toast.LENGTH_SHORT).show();
             }
         });
 

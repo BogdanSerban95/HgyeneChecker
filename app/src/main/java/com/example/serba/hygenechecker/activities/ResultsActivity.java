@@ -75,6 +75,7 @@ public class ResultsActivity extends AppCompatActivity implements OnMapReadyCall
     private boolean addToMap = false;
     private View mapProgressBar;
     private boolean mapMode = false;
+    private boolean loadingError = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +146,7 @@ public class ResultsActivity extends AppCompatActivity implements OnMapReadyCall
 
             @Override
             public void onScroll(AbsListView absListView, int i, int i1, int i2) {
-                if (endOfList || isLoading)
+                if (endOfList || isLoading || loadingError)
                     return;
                 if (i + i1 >= i2) {
                     if (params != null) {
@@ -274,12 +275,15 @@ public class ResultsActivity extends AppCompatActivity implements OnMapReadyCall
         RequestWrapper.getInstance(this).addJsonObjectRequest(Request.Method.GET, "Establishments", params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                loadingError = false;
                 handleResponse(response);
                 onLoadingDone();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                loadingError = true;
+                findViewById(R.id.load_error_view).setVisibility(View.VISIBLE);
                 onLoadingDone();
                 Toast.makeText(ResultsActivity.this, getResources().getString(R.string.results_error), Toast.LENGTH_SHORT).show();
                 error.printStackTrace();
@@ -322,6 +326,7 @@ public class ResultsActivity extends AppCompatActivity implements OnMapReadyCall
     private void onLoadingStarted() {
         isLoading = true;
         listFooter.setVisibility(View.VISIBLE);
+        findViewById(R.id.load_error_view).setVisibility(View.GONE);
         bottomNav.setEnabled(false);
         if (mapMode) {
             mapProgressBar.setVisibility(View.VISIBLE);
