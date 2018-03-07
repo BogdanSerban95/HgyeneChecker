@@ -74,6 +74,10 @@
     <string name="fhis">FHIS</string>
     <string name="fhrs">FHRS</string>
     <string name="results_error">Error while retrieving data</string>
+    <string name="scores">Scores</string>
+    <string name="hygiene">Hygiene</string>
+    <string name="structural">Structural</string>
+    <string name="confidence_in_management">Confidence In Management</string>
 
     <string-array name="fhis_ratings">
         <item>Pass</item>

@@ -116,6 +116,13 @@ public class EstablishmentDetailsActivity extends AppCompatActivity implements O
         ((TextView) findViewById(R.id.auth_name_tv)).setText(currentItem.getLocalAuthorityName());
         ((TextView) findViewById(R.id.auth_email_tv)).setText(currentItem.getLocalAuthorityEmailAddress());
         ((TextView) findViewById(R.id.auth_website_tv)).setText(currentItem.getLocalAuthorityWebSite());
+
+        if (currentItem.getSchemeType().equals("FHRS")) {
+            findViewById(R.id.scores_card_view).setVisibility(View.VISIBLE);
+            ((TextView) findViewById(R.id.hygiene_score_label)).setText(String.valueOf(currentItem.getScores().getHygiene()));
+            ((TextView) findViewById(R.id.confidence_score_label)).setText(String.valueOf(currentItem.getScores().getConfidenceInManagement()));
+            ((TextView) findViewById(R.id.structural_score_label)).setText(String.valueOf(currentItem.getScores().getStructural()));
+        }
         try {
 
             String dateText = Utils.formatDateString(currentItem.getRatingDate(), "yyyy-MM-dd'T'hh:mm:ss", "dd.MM.yyyy");
