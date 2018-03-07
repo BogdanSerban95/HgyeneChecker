@@ -14,6 +14,8 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.example.serba.hygenechecker.R;
+import com.example.serba.hygenechecker.models.DataCache;
+import com.example.serba.hygenechecker.models.DatabaseInstance;
 import com.example.serba.hygenechecker.models.Establishment;
 import com.example.serba.hygenechecker.models.RequestWrapper;
 import com.example.serba.hygenechecker.models.Utils;
@@ -33,6 +35,7 @@ public class EstablishmentDetailsActivity extends AppCompatActivity implements O
     private boolean locationAdded = false;
     private ShimmerFrameLayout loadingView;
     private View errorView;
+    private ImageView favouriteStar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,7 @@ public class EstablishmentDetailsActivity extends AppCompatActivity implements O
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+        favouriteStar = findViewById(R.id.favourite_star);
 
         loadingView = findViewById(R.id.loading_view);
         loadingView.startShimmerAnimation();
@@ -82,6 +86,23 @@ public class EstablishmentDetailsActivity extends AppCompatActivity implements O
             }
         });
 
+        favouriteStar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (DataCache.getInstance().getFavouritesIds().indexOf(currentItem.getFHRSID()) == -1) {
+                    DatabaseInstance.getInstance().getDb(getApplicationContext()).establishmentDao().insertEstablishment(currentItem);
+                    DataCache.getInstance().addFavouriteId(currentItem.getFHRSID());
+                    ((ImageView) view).setImageResource(R.drawable.star_on);
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.favourite_add_message), Toast.LENGTH_SHORT).show();
+                } else {
+                    DatabaseInstance.getInstance().getDb(getApplicationContext()).establishmentDao().deleteEstablishment(currentItem);
+                    ((ImageView) view).setImageResource(R.drawable.star_off);
+                    DataCache.getInstance().removeFavouriteId(currentItem.getFHRSID());
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.favourite_remove_message), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_view);
         mapFragment.getMapAsync(this);
     }
@@ -115,6 +136,12 @@ public class EstablishmentDetailsActivity extends AppCompatActivity implements O
             findViewById(R.id.rating_image_view).setVisibility(View.GONE);
             ((TextView) findViewById(R.id.fhis_rating_label)).setText(currentItem.getRatingValue());
             findViewById(R.id.fhis_rating_label).setVisibility(View.VISIBLE);
+        }
+
+        if (DataCache.getInstance().getFavouritesIds().indexOf(currentItem.getFHRSID()) == -1) {
+            favouriteStar.setImageResource(R.drawable.star_off);
+        } else {
+            favouriteStar.setImageResource(R.drawable.star_on);
         }
 
         if (currentItem.hasGeocode()) {
