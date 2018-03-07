@@ -78,6 +78,7 @@
     <string name="hygiene">Hygiene</string>
     <string name="structural">Structural</string>
     <string name="confidence_in_management">Confidence In Management</string>
+    <string name="gps_error">Error while checking GPS connection</string>
 
     <string-array name="fhis_ratings">
         <item>Pass</item>

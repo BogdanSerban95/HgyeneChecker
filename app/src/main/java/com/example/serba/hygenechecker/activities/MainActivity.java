@@ -11,10 +11,12 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.transition.TransitionManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,6 +32,7 @@ import android.widget.RatingBar;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.serba.hygenechecker.R;
 import com.example.serba.hygenechecker.models.AAdvancedSearchParam;
@@ -153,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
         regionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -194,6 +198,11 @@ public class MainActivity extends AppCompatActivity {
                 runLocationBasedSearch();
             }
         });
+
+        regionCheckBox.setChecked(!regionCheckBox.isChecked());
+        searchRadiusCheckBox.setChecked(!searchRadiusCheckBox.isChecked());
+        ratingCheckBox.setChecked(!ratingCheckBox.isChecked());
+        businessTypeCheckBox.setChecked(!businessTypeCheckBox.isChecked());
     }
 
     @Override
@@ -221,7 +230,6 @@ public class MainActivity extends AppCompatActivity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     retrieveCurrentLocation();
                 }
-                return;
         }
     }
 
@@ -325,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
                     searchParameters.setSchemeTypeKey("fhis");
                     searchParameters.setFhisRatingKey(fhisRatingSpinner.getSelectedItemPosition());
                 } else {
-                    searchParameters.setRatingOperator(((Spinner) ratingOperatorSpinner).getSelectedItem().toString());
+                    searchParameters.setRatingOperator((ratingOperatorSpinner).getSelectedItem().toString());
                     searchParameters.setSchemeTypeKey(null);
                     searchParameters.setRatingKey(String.valueOf((int) ratingBar.getRating()));
                 }
@@ -382,9 +390,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean noString(String s) {
-        if (s.isEmpty() && s.length() == 0)
-            return true;
-        return false;
+        return s.isEmpty() && s.length() == 0;
     }
 
     public void requestLocationPermissions() {
@@ -495,7 +501,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         } catch (Exception ex) {
-
+            Toast.makeText(this, getResources().getString(R.string.gps_error), Toast.LENGTH_SHORT).show();
         }
         return gpsEnabled;
     }

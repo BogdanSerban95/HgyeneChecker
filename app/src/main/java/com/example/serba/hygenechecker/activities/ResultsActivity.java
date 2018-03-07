@@ -98,8 +98,6 @@ public class ResultsActivity extends AppCompatActivity implements OnMapReadyCall
         resultsListView.setAdapter(resultsAdapter);
         resultsListView.addFooterView(listFooter);
 
-        requestEstablishments();
-
         loadMoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
