@@ -450,7 +450,13 @@ public class MainActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage(getResources().getString(R.string.waiting_location));
         progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
+        progressDialog.setCancelable(true);
+        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                locationManager.removeUpdates(locationListener);
+            }
+        });
         progressDialog.show();
         if (locationListener == null) {
             locationListener = new LocationListener() {
